@@ -44,7 +44,7 @@ export default class PaymentController extends BaseController {
             vnp_IpAddr: request.socket.remoteAddress
         }
 
-        vnp_Params = Common.sortObject(vnp_Params) as any;
+        vnp_Params = Common.SortObject(vnp_Params) as any;
 
         let signData = qs.stringify(vnp_Params, { encode: false })
         let hmac = crypto.createHmac("sha512", PaymentConfig.Vnpay.secretKey);
