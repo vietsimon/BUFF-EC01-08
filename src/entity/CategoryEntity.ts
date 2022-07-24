@@ -2,35 +2,29 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { StatusType } from "../type/CommonType";
 
 @Entity()
-export default class CustomerEntity {
+export default class CategoryEntity {
 
-    constructor(object?: Partial<CustomerEntity>) {
+    constructor(object?: Partial<CategoryEntity>) {
         Object.assign(this, object)
     }
 
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({ nullable: false })
-    fullName: string
+    @Column()
+    parentId: number
 
     @Column({ nullable: false, unique: true })
-    phone: string
-
-    @Column({ nullable: false, unique: true })
-    email: string
-
-    @Column({ type: "timestamp without time zone" })
-    dateOfBirth: Date
-
-    @Column({ nullable: true })
-    address: string
-
-    @Column({ nullable: false, unique: true })
-    username: string
+    key: string
 
     @Column({ nullable: false })
-    password: string
+    name: string
+
+    @Column()
+    description: string
+
+    @Column({ nullable: false })
+    picture: string
 
     @Column({ nullable: false, type: "text" })
     status: StatusType

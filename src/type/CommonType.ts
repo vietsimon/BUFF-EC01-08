@@ -6,3 +6,6 @@ export type BaseResponseServiceType = {
 export type DataResponseServiceType<T> = BaseResponseServiceType & {
     data: T
 }
+
+export type StatusType = "active" | "inactive"
+export type GenderType = "all" | "man" | "women" | "kid"

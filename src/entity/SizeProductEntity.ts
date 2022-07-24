@@ -2,9 +2,9 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { StatusType } from "../type/CommonType";
 
 @Entity()
-export default class CustomerEntity {
+export default class SizeProductEntity {
 
-    constructor(object?: Partial<CustomerEntity>) {
+    constructor(object?: Partial<SizeProductEntity>) {
         Object.assign(this, object)
     }
 
@@ -12,25 +12,10 @@ export default class CustomerEntity {
     id: number
 
     @Column({ nullable: false })
-    fullName: string
-
-    @Column({ nullable: false, unique: true })
-    phone: string
-
-    @Column({ nullable: false, unique: true })
-    email: string
-
-    @Column({ type: "timestamp without time zone" })
-    dateOfBirth: Date
-
-    @Column({ nullable: true })
-    address: string
-
-    @Column({ nullable: false, unique: true })
-    username: string
+    type: string
 
     @Column({ nullable: false })
-    password: string
+    name: string
 
     @Column({ nullable: false, type: "text" })
     status: StatusType
@@ -40,5 +25,4 @@ export default class CustomerEntity {
 
     @Column({ type: "timestamp without time zone" })
     updatedAt: Date
-
 }
