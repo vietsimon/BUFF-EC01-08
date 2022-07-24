@@ -2,6 +2,8 @@ import BaseController from "./BaseController";
 import express = require("express");
 import CustomerService from "../services/CustomerService";
 import { RegisterCustomerType } from "../type/CustomerType";
+import * as jwt from "jsonwebtoken"
+import SecretConfig from "../shared/SecretConfig";
 
 export default class AuthorizeController extends BaseController {
     constructor() {
@@ -31,10 +33,15 @@ export default class AuthorizeController extends BaseController {
     private loginCustomer = async (request: express.Request, response: express.Response) => {
         try {
             let { username, password } = request.body as any
+
+
             let service = new CustomerService();
             let dataService = await service.LoginCustomer(username, password);
+            let token = jwt.sign({
+                username
+            }, SecretConfig.Jwt,{ expiresIn: "1h" })
             if (dataService.status) return response.status(200).json({
-                token: ""
+                token: token
             });
             else return response.status(400).json({ errors: dataService.errors })
         } catch (error) {

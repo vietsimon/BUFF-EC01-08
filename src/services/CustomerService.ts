@@ -97,6 +97,7 @@ export default class CustomerService {
                 status: "active"
             }
         });
+       
         if (!customer) {
             result.status = false;
             result.errors.push("Ten dang nhap hoac mat khau khong dung");
@@ -104,3 +105,8 @@ export default class CustomerService {
         return result
     }
 }
+
+// public async Logout(): Promise<BaseResponseServiceType> {
+   
+
+// }
