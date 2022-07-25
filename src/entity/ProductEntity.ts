@@ -24,10 +24,10 @@ export default class ProductEntity {
     @Column({ nullable: false })
     description: string
 
-    @Column({ nullable: false, default: 0 })
+    @Column({ nullable: false, default: 0, type: "decimal" })
     price: number
 
-    @Column({ nullable: false, default: 0 })
+    @Column({ nullable: false, default: 0, type: "decimal" })
     oldPrice: number
 
     @Column({ nullable: false, type: "json" })

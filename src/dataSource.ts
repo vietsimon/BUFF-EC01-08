@@ -1,5 +1,12 @@
 import { DataSource } from "typeorm";
+import CategoryEntity from "./entity/CategoryEntity";
 import CustomerEntity from "./entity/CustomerEntity";
+import DefineDataEntity from "./entity/DefineDataEntity";
+import ManagerEntity from "./entity/ManagerEntity";
+import OrderEntity from "./entity/OrderEntity";
+import OrderProductEntity from "./entity/OrderProductEntity";
+import ProductEntity from "./entity/ProductEntity";
+import SizeProductEntity from "./entity/SizeProductEntity";
 
 const AppDataSource = new DataSource({
     type: "postgres",
@@ -10,7 +17,16 @@ const AppDataSource = new DataSource({
     database: "buff-vn-server",
     synchronize: true,
     logging: false,
-    entities: [CustomerEntity],
+    entities: [
+        CustomerEntity,
+        CategoryEntity,
+        DefineDataEntity,
+        ProductEntity,
+        SizeProductEntity,
+        ManagerEntity,
+        OrderEntity,
+        OrderProductEntity
+    ],
     subscribers: [],
     migrations: [],
 });
