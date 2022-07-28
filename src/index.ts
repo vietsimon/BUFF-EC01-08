@@ -1,16 +1,16 @@
 import bodyParser = require("body-parser");
 import cors = require("cors");
 import express = require("express");
-import AuthorizeController from "./controller/AuthorizeController";
-import PaymentController from "./controller/PaymentController";
+import AuthorizeWebController from "./controller/web/AuthorizeWebController";
+import PaymentWebController from "./controller/web/PaymentWebController";
 import { BuffVnDataSourceInit } from "./dataSource";
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 let controller = [
-    new PaymentController(),
-    new AuthorizeController()
+    new PaymentWebController(),
+    new AuthorizeWebController()
 ]
 app.use(bodyParser.json())
 app.use(cors({

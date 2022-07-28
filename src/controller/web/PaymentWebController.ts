@@ -2,11 +2,11 @@ import dayjs = require("dayjs");
 import express = require("express");
 import qs = require("qs");
 import crypto = require("crypto");
-import Common from "../ultils/common";
-import BaseController from "./BaseController";
-import PaymentConfig from "../shared/paymentConfig";
+import PaymentConfig from "../../shared/paymentConfig";
+import Common from "../../ultils/common";
+import BaseController from "../BaseController";
 
-export default class PaymentController extends BaseController {
+export default class PaymentWebController extends BaseController {
     constructor() {
         super();
         this.initializeRouter();

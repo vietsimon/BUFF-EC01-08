@@ -1,11 +1,11 @@
-import BaseController from "./BaseController";
+import * as jwt from "jsonwebtoken";
+import CustomerService from "../../services/CustomerService";
+import SecretConfig from "../../shared/SecretConfig";
+import { RegisterCustomerType } from "../../type/CustomerType";
+import BaseController from "../BaseController";
 import express = require("express");
-import CustomerService from "../services/CustomerService";
-import { RegisterCustomerType } from "../type/CustomerType";
-import * as jwt from "jsonwebtoken"
-import SecretConfig from "../shared/SecretConfig";
 
-export default class AuthorizeController extends BaseController {
+export default class AuthorizeWebController extends BaseController {
     constructor() {
         super();
         this.initializeRouter();
@@ -37,15 +37,18 @@ export default class AuthorizeController extends BaseController {
 
             let service = new CustomerService();
             let dataService = await service.LoginCustomer(username, password);
-            let token = jwt.sign({
-                username
-            }, SecretConfig.Jwt,{ expiresIn: "1h" })
-            if (dataService.status) return response.status(200).json({
-                token: token
-            });
+
+            if (dataService.status) {
+                let token = jwt.sign({
+                    username
+                }, SecretConfig.JwtCustomer, { expiresIn: "2h" })
+                return response.status(200).json({
+                    token: token
+                });
+            }
             else return response.status(400).json({ errors: dataService.errors })
         } catch (error) {
-            return response.status(500).json({
+            return response.status(400).json({
                 error: error.message
             })
         }

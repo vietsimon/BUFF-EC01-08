@@ -11,14 +11,12 @@ export default class CustomerService {
             status: true,
             errors: []
         }
-        if(!requestBody?.phone)
-        {
-            result.status=false
+        if (!requestBody?.phone) {
+            result.status = false
             result.errors.push("Thiếu tên số điện thoại")
         }
-        if(!requestBody?.address)
-        {
-            result.status=false
+        if (!requestBody?.address) {
+            result.status = false
             result.errors.push("Thiếu địa chỉ")
         }
 
@@ -42,7 +40,7 @@ export default class CustomerService {
             result.status = false
             result.errors.push("Thiếu mật khẩu");
         }
-        
+
 
         if (!result.status) return result;
         let customerExist = await BuffVnDataSource.getRepository(CustomerEntity).findOne({
@@ -56,7 +54,7 @@ export default class CustomerService {
             result.errors.push("Người dùng đã tồn tại");
             return result;
         }
-        let password = Common.GeneratePassword(requestBody.username, requestBody.password);
+        let password = Common.GeneratePassword(requestBody.username, requestBody.password, "customer");
         let customter = new CustomerEntity({
             address: requestBody.address,
             createdAt: new Date(),
@@ -81,15 +79,15 @@ export default class CustomerService {
         }
         if (!username) {
             result.status = false;
-            result.errors.push("Ten dang nhap khong phu hop");
+            result.errors.push("Tên đăng nhập không phù hợp");
         }
         if (!password) {
             result.status = false;
-            result.errors.push("Mat khau khong phu hop");
+            result.errors.push("Mật khẩu không phù hợp");
         }
         if (!result.status) return result;
 
-        password = Common.GeneratePassword(username, password);
+        password = Common.GeneratePassword(username, password, "customer");
         let customer = await BuffVnDataSource.getRepository(CustomerEntity).findOne({
             where: {
                 username: username,
@@ -97,7 +95,7 @@ export default class CustomerService {
                 status: "active"
             }
         });
-       
+
         if (!customer) {
             result.status = false;
             result.errors.push("Ten dang nhap hoac mat khau khong dung");
@@ -105,8 +103,3 @@ export default class CustomerService {
         return result
     }
 }
-
-// public async Logout(): Promise<BaseResponseServiceType> {
-   
-
-// }
