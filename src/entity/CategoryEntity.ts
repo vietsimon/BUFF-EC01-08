@@ -34,5 +34,7 @@ export default class CategoryEntity {
 
     @Column({ type: "timestamp without time zone" })
     updatedAt: Date
-
+    
+    @Column({nullable:true})
+    sort: number
 }
