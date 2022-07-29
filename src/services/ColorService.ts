@@ -1,18 +1,18 @@
 import { BuffVnDataSource } from "../dataSource";
-import CategoryEntity from "../entity/CategoryEntity";
-import { CategoryPagingType, CreateCategoryType, UpdateCategoryType } from "../type/CategoryType";
+import ColorEntity from "../entity/ColorEntity";
+import { ColorPagingType, CreateColorType, UpdateColorType } from "../type/ColorType";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
 import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 
-export default class CategoryService {
-    private alias: string = "category"
+export default class ColorService {
+    private alias: string = "colorProduct"
+
     private async GetById(id: number) {
-        let result = await BuffVnDataSource.getRepository(CategoryEntity).findOneBy({
+        let result = await BuffVnDataSource.getRepository(ColorEntity).findOneBy({
             id
         });
         return result;
     }
-
     public async GetDetail(id: number) {
         const result: DataResponseServiceType<any> = {
             status: true,
@@ -25,23 +25,23 @@ export default class CategoryService {
         }
         if (!result.status) return result;
 
-        let category = await this.GetById(id);
+        let size = await this.GetById(id);
 
-        if (!category) {
+        if (!size) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
         if (!result.status) return result;
 
-        result.data = category;
+        result.data = size;
         return result;
     }
 
-    public async GetAllCategory() {
-        let data = await BuffVnDataSource.createQueryBuilder(CategoryEntity, this.alias)
+    public async GetAll() {
+        let data = await BuffVnDataSource.createQueryBuilder(ColorEntity, this.alias)
             .select(`id`)
-            .addSelect(`key`)
             .addSelect(`name`)
+            .addSelect(`color`)
             .getRawMany();
 
         const result: DataResponseServiceType<any> = {
@@ -52,28 +52,28 @@ export default class CategoryService {
         return result;
     }
 
-    public async GetCategoryPaging(query: IBaseFilterRequestType) {
-        let pageData: CategoryPagingType<any> = {} as any;
+    public async GetPaging(query: IBaseFilterRequestType) {
+        let pageData: ColorPagingType<any> = {} as any;
         pageData.currentPage = query?.page ?? 1;
-        const recordsToSkip = (query.page - 1) * query.pageSize;
-        let queryData = BuffVnDataSource.createQueryBuilder(CategoryEntity, this.alias)
+        let recordsToSkip = (query.page - 1) * query.pageSize;
+        let queryData = BuffVnDataSource.createQueryBuilder(ColorEntity, this.alias)
         if (query.keySearch)
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
 
         pageData.total = await queryData.getCount();
         pageData.datas = await queryData.skip(recordsToSkip)
-            .take(query.pageSize)
-            .select(`${this.alias}.*`)
+            .take(query.pageSize).select(`${this.alias}.*`)
             .getRawMany();
 
-        const result: DataResponseServiceType<any> = {
+        let result: DataResponseServiceType<any> = {
             status: true,
             errors: [],
             data: pageData
         };
         return result;
     }
-    public async CreateCategory(data: CreateCategoryType): Promise<BaseResponseServiceType> {
+
+    public async Create(data: CreateColorType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
@@ -82,30 +82,25 @@ export default class CategoryService {
             result.status = false
             result.errors.push("Tên không được rỗng")
         }
-        if (!data?.key) {
+        if (!data?.color) {
             result.status = false
-            result.errors.push("Từ khóa không được rỗng")
+            result.errors.push("Màu không được rỗng")
         }
         if (!result.status) return result;
 
-        // data.key=Common.replaceAccents( data.name);
-        let category = new CategoryEntity({
-            key: data.key,
+        let size = new ColorEntity({
             name: data.name,
-            description: data.description,
-            parentId: data.parentId,
-            picture: data.picture,
-            sort: data.sort,
+            color: data.color,
             updatedAt: new Date(),
             createdAt: new Date(),
             status: data.status,
         })
 
-        await BuffVnDataSource.getRepository(CategoryEntity).save(category);
+        await BuffVnDataSource.getRepository(ColorEntity).save(size);
         return result;
     }
 
-    public async UpdateCategory(data: UpdateCategoryType): Promise<BaseResponseServiceType> {
+    public async Update(data: UpdateColorType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
@@ -120,24 +115,24 @@ export default class CategoryService {
             result.status = false
             result.errors.push("Tên không được rỗng")
         }
-        if (!data?.key) {
+        if (!data?.color) {
             result.status = false
-            result.errors.push("Từ khóa không được rỗng")
+            result.errors.push("Màu không được rỗng")
         }
         if (!result.status) return result;
 
-        let category = await this.GetById(id);
-        if (!category) {
+        let size = await this.GetById(id);
+        if (!size) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
         if (!result.status) return result;
 
-        await BuffVnDataSource.getRepository(CategoryEntity).update({ id }, data);
+        await BuffVnDataSource.getRepository(ColorEntity).update({ id }, data);
         return result;
     }
 
-    public async DeleteCategory(id: number): Promise<BaseResponseServiceType> {
+    public async Delete(id: number): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
@@ -148,19 +143,15 @@ export default class CategoryService {
         }
         if (!result.status) return result;
 
-        let category = await BuffVnDataSource.getRepository(CategoryEntity).findOne({
-            where: { id: id }
-        });
+        let size = await this.GetById(id);
 
-        if (!category) {
+        if (!size) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
         if (!result.status) return result;
 
-        await BuffVnDataSource.getRepository(CategoryEntity).delete({ id });
+        await BuffVnDataSource.getRepository(ColorEntity).delete({ id });
         return result;
     }
-
-
 }

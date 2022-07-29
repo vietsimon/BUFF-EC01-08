@@ -92,7 +92,7 @@ export default class SizeProductService {
             type: data.type,
             updatedAt: new Date(),
             createdAt: new Date(),
-            status: "active",
+            status: data.status,
         })
 
         await BuffVnDataSource.getRepository(SizeProductEntity).save(size);

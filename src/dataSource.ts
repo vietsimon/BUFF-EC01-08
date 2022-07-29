@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import CategoryEntity from "./entity/CategoryEntity";
+import ColorEntity from "./entity/ColorEntity";
 import CustomerEntity from "./entity/CustomerEntity";
 import DefineDataEntity from "./entity/DefineDataEntity";
 import ManagerEntity from "./entity/ManagerEntity";
@@ -22,6 +23,7 @@ const AppDataSource = new DataSource({
         CategoryEntity,
         DefineDataEntity,
         ProductEntity,
+        ColorEntity,
         SizeProductEntity,
         ManagerEntity,
         OrderEntity,

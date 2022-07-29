@@ -1,8 +1,9 @@
 import bodyParser = require("body-parser");
 import cors = require("cors");
 import express = require("express");
-import CategoriesController from "./controller/admin/CategoriesAdminController";
-import SizeController from "./controller/admin/SizeAdminController";
+import CategoriesAdminController from "./controller/admin/CategoriesAdminController";
+import ColorAdminController from "./controller/admin/ColorAdminController";
+import SizeAdminController from "./controller/admin/SizeAdminController";
 import AuthorizeWebController from "./controller/web/AuthorizeWebController";
 import PaymentWebController from "./controller/web/PaymentWebController";
 import { BuffVnDataSourceInit } from "./dataSource";
@@ -13,8 +14,9 @@ const port = process.env.PORT || 5000;
 let controller = [
     new PaymentWebController(),
     new AuthorizeWebController(),
-    new SizeController(),
-    new CategoriesController()
+    new SizeAdminController(),
+    new CategoriesAdminController(),
+    new ColorAdminController()
 ]
 app.use(bodyParser.json())
 app.use(cors({

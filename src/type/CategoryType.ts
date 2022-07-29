@@ -9,7 +9,8 @@ export type CreateCategoryType = {
     parentId: number
     description?: string
     picture?: string,
-    sort?: number
+    sort?: number,
+    status: StatusType
 }
 export type UpdateCategoryType = {
     id: number
