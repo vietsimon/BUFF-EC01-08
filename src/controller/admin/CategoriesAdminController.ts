@@ -1,8 +1,9 @@
 import express = require("express");
-import SizeService from "../../services/SizeProductService";
+import CategoryService from "../../services/CategoryService";
 import BaseController from "../BaseController"
 
-export default class SizeController extends BaseController {
+export default class CategoriesAdminController extends BaseController {
+
     constructor() {
         super();
         this.initializeRouter();
@@ -11,21 +12,22 @@ export default class SizeController extends BaseController {
         this.initGetRouter();
         this.initPostPutDeleteRouter();
     }
+
     private initGetRouter() {
-        this._router.get("/v1/admin/size", this.getSizePaging);
-        this._router.get("/v1/admin/size/all", this.getSizeAll);
-        this._router.get("/v1/admin/size/:id", this.getSizeDetail);
+        this._router.get("/v1/admin/categories/all", this.getCategoryAll);
+        this._router.get("/v1/admin/categories", this.getCategoryPaging);
+        this._router.get("/v1/admin/categories/:id", this.getCategoryDetail);
     }
     private initPostPutDeleteRouter() {
-        this._router.post("/v1/admin/size", this.createSize);
-        this._router.put("/v1/admin/size", this.updateSize);
-        this._router.delete("/v1/admin/size/:id", this.deleteSize);
+        this._router.post("/v1/admin/categories", this.createCategory);
+        this._router.put("/v1/admin/categories", this.updateCategory);
+        this._router.delete("/v1/admin/categories/:id", this.deleteCategory);
     }
 
-    private getSizeAll = async (request: express.Request, response: express.Response) => {
+    private getCategoryAll = async (request: express.Request, response: express.Response) => {
         try {
-            let service = new SizeService();
-            let dataService = await service.GetAll();
+            let service = new CategoryService();
+            let dataService = await service.GetAllCategory();
             if (dataService.status)
                 return response.status(200).json(dataService);
             else return response.status(400).json({ errors: dataService.errors })
@@ -36,10 +38,10 @@ export default class SizeController extends BaseController {
         }
     }
 
-    private getSizePaging = async (request: express.Request, response: express.Response) => {
+    private getCategoryPaging = async (request: express.Request, response: express.Response) => {
         try {
-            let service = new SizeService();
-            let dataService = await service.GetPaging(request.query);
+            let service = new CategoryService();
+            let dataService = await service.GetCategoryPaging(request.query);
             if (dataService.status)
                 return response.status(200).json(dataService.data);
             else return response.status(400).json({ errors: dataService.errors })
@@ -50,10 +52,10 @@ export default class SizeController extends BaseController {
         }
     }
 
-    private getSizeDetail = async (request: express.Request, response: express.Response) => {
+    private getCategoryDetail = async (request: express.Request, response: express.Response) => {
         try {
             let { id } = request.params as any;
-            let service = new SizeService();
+            let service = new CategoryService();
             let dataService = await service.GetDetail(id);
             if (dataService.status)
                 return response.status(200).json(dataService);
@@ -64,11 +66,12 @@ export default class SizeController extends BaseController {
             })
         }
     }
-
-    private createSize = async (request: express.Request, response: express.Response) => {
+    private createCategory = async (request: express.Request, response: express.Response) => {
         try {
-            let service = new SizeService();
-            let dataService = await service.Create(request.body);
+            let { parentId } = request.body as any;
+            if (!parentId) request.body["parentId"] = 0;
+            let service = new CategoryService();
+            let dataService = await service.CreateCategory(request.body);
             if (dataService.status) {
                 return response.status(200).json(dataService);
             }
@@ -80,10 +83,12 @@ export default class SizeController extends BaseController {
         }
     }
 
-    private updateSize = async (request: express.Request, response: express.Response) => {
+    private updateCategory = async (request: express.Request, response: express.Response) => {
         try {
-            let service = new SizeService();
-            let dataService = await service.Update(request.body);
+            let { parentId } = request.body as any;
+            if (!parentId) request.body["parentId"] = 0;
+            let service = new CategoryService();
+            let dataService = await service.UpdateCategory(request.body);
             if (dataService.status)
                 return response.status(200).json(dataService);
             else return response.status(400).json({ errors: dataService.errors })
@@ -94,11 +99,11 @@ export default class SizeController extends BaseController {
         }
     }
 
-    private deleteSize = async (request: express.Request, response: express.Response) => {
+    private deleteCategory = async (request: express.Request, response: express.Response) => {
         try {
             let { id } = request.params as any;
-            let service = new SizeService();
-            let dataService = await service.Delete(id);
+            let service = new CategoryService();
+            let dataService = await service.DeleteCategory(id);
             if (dataService.status)
                 return response.status(200).json(dataService);
             else return response.status(400).json({ errors: dataService.errors })

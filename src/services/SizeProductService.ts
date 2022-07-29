@@ -83,7 +83,7 @@ export default class SizeProductService {
         }
         if (!data?.type) {
             result.status = false
-            result.errors.push("Màu không được rỗng")
+            result.errors.push("Loại không được rỗng")
         }
         if (!result.status) return result;
 
@@ -116,7 +116,7 @@ export default class SizeProductService {
         }
         if (!data?.type) {
             result.status = false
-            result.errors.push("Màu không được rỗng")
+            result.errors.push("Loại không được rỗng")
         }
         if (!result.status) return result;
 

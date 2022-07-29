@@ -1,8 +1,8 @@
 import bodyParser = require("body-parser");
 import cors = require("cors");
 import express = require("express");
-import CategoriesController from "./controller/admin/CategoriesController";
-import SizeController from "./controller/admin/SizeController";
+import CategoriesController from "./controller/admin/CategoriesAdminController";
+import SizeController from "./controller/admin/SizeAdminController";
 import AuthorizeWebController from "./controller/web/AuthorizeWebController";
 import PaymentWebController from "./controller/web/PaymentWebController";
 import { BuffVnDataSourceInit } from "./dataSource";
