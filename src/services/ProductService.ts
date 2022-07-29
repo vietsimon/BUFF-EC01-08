@@ -1,125 +1,262 @@
 import { BuffVnDataSource } from "../dataSource";
 import ProductEntity from "../entity/ProductEntity";
-import { CreateProductType, UpdateProductType } from "../type/ProductType";
+import { ProductPagingType, CreateProductType, UpdateProductType } from "../type/ProductType";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
+import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 
 export default class ProductService {
-    public async GetProductById(id: number) {
-        let result = await BuffVnDataSource.getRepository(ProductEntity).findOneBy({
-            id
-        });
+    private alias: string = "product"
+
+    private async GetById(id: number) {
+        let result = await BuffVnDataSource.createQueryBuilder(ProductEntity, this.alias)
+            .where(`${this.alias}.id = :id`, { id: id })
+            .leftJoin(`${this.alias}.category`, 'category')
+            .leftJoin(`${this.alias}.size`, 'size')
+            .leftJoin(`${this.alias}.color`, 'color')
+            .select(`${this.alias}.*`)
+            .addSelect([`category.id`, `category.name`])
+            .addSelect([`size.id`, `size.name`])
+            .addSelect([`color.id`, `color.name`])
+            .getRawOne()
         return result;
     }
-
-    public async GetProductByKey(key: string) {
-        let result = await BuffVnDataSource.getRepository(ProductEntity).findOneBy({
-            key
-        });
-        return result;
-    }
-
-    public async GetAllProduct() {
-        let data = await BuffVnDataSource.createQueryBuilder(ProductEntity, "lv1")
-            .leftJoin(ProductEntity, 'lv2', `lv2."parentId" = lv1.id`)
-            .leftJoin(ProductEntity, 'lv3', `lv3."parentId" = lv2.id`)
-            .leftJoin(ProductEntity, 'lv4', `lv4."parentId" = lv3.id`)
-            .select(`lv1.id`)
-            .addSelect(`lv1.key`)
-            .addSelect(`lv1.name`)
-            .addSelect(`lv2.id`)
-            .addSelect(`lv2.key`)
-            .addSelect(`lv2.name`)
-            .addSelect(`lv3.id`)
-            .addSelect(`lv3.key`)
-            .addSelect(`lv3.name`)
-            .addSelect(`lv4.id`)
-            .addSelect(`lv4.key`)
-            .addSelect(`lv4.name`)
-            .execute();
+    public async GetDetail(id: number) {
         const result: DataResponseServiceType<any> = {
             status: true,
             errors: [],
-            data
+            data: {}
         }
+        if (!id) {
+            result.status = false
+            result.errors.push("Mã không được rỗng")
+        }
+        if (!result.status) return result;
+
+        let size = await this.GetById(id);
+
+        if (!size) {
+            result.status = false;
+            result.errors.push("Không tồn tại thông tin này!");
+        }
+        if (!result.status) return result;
+
+        result.data = size;
         return result;
     }
 
-    public async CreateProduct(data: CreateProductType): Promise<BaseResponseServiceType> {
+    public async GetPaging(query: IBaseFilterRequestType) {
+        let pageData: ProductPagingType<any> = {} as any;
+        pageData.currentPage = query?.page ?? 1;
+        let recordsToSkip = (query.page - 1) * query.pageSize;
+        let queryData = BuffVnDataSource.createQueryBuilder(ProductEntity, this.alias)
+        if (query.keySearch)
+            queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
+
+        if (query.status)
+            queryData = queryData.where(`${this.alias}.status like :status`, { status: `%${query.status}%` });
+
+        pageData.total = await queryData.getCount();
+        pageData.datas = await queryData.skip(recordsToSkip)
+            .take(query.pageSize)
+            .leftJoin(`${this.alias}.category`, 'category')
+            .leftJoin(`${this.alias}.size`, 'size')
+            .leftJoin(`${this.alias}.color`, 'color')
+            .select(`${this.alias}.*`)
+            .addSelect([`category.id`, `category.name`])
+            .addSelect([`size.id`, `size.name`])
+            .addSelect([`color.id`, `color.name`])
+            .getRawMany();
+
+        let result: DataResponseServiceType<any> = {
+            status: true,
+            errors: [],
+            data: pageData
+        };
+        return result;
+    }
+
+    public async Create(data: CreateProductType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
-        }
-        if (!data?.name) {
-            result.status = false
-            result.errors.push("Tên không được rỗng")
         }
         if (!data?.key) {
             result.status = false
             result.errors.push("Từ khóa không được rỗng")
         }
+        if (!data?.name) {
+            result.status = false
+            result.errors.push("Tên không được rỗng")
+        }
+        if (!data?.activity) {
+            result.status = false
+            result.errors.push("Hoạt động không được rỗng")
+        }
+        if (!data?.categoryId) {
+            result.status = false
+            result.errors.push("Danh mục không được rỗng")
+        }
+        if (!data?.description) {
+            result.status = false
+            result.errors.push("Mô tả không được rỗng")
+        }
+        if (!data?.gender) {
+            result.status = false
+            result.errors.push("Giới tính không được rỗng")
+        }
+        if (!data?.images) {
+            result.status = false
+            result.errors.push("Hình ảnh không được rỗng")
+        }
+        if (!data?.label) {
+            result.status = false
+            result.errors.push("Nhãn hiệu không được rỗng")
+        }
+        if (!data?.oldPrice) {
+            result.status = false
+            result.errors.push("Giá cũ không được rỗng")
+        }
+        if (!data?.price) {
+            result.status = false
+            result.errors.push("Giá không được rỗng")
+        }
+        if (!data?.sizeId) {
+            result.status = false
+            result.errors.push("Kích thước không được rỗng")
+        }
+        if (!data?.colorId) {
+            result.status = false
+            result.errors.push("Màu không được rỗng")
+        }
+        if (!data?.technology) {
+            result.status = false
+            result.errors.push("Công nghệ không được rỗng")
+        }
+        if (!data?.material) {
+            result.status = false
+            result.errors.push("Chất liệu không được rỗng")
+        }
+        if (!data?.status) {
+            result.status = false
+            result.errors.push("Trạng thái không được rỗng")
+        }
+
         if (!result.status) return result;
 
-        // data.key=Common.replaceAccents( data.name);
-        let Product = new ProductEntity({
-            key: data.key,
-            name: data.name,
-            description: data.description,
-            images: data.images,
+        let size = new ProductEntity({
             updatedAt: new Date(),
-            createdAt: new Date(),
-            status: "active",
+            createdAt: new Date()
         })
-
-        await BuffVnDataSource.getRepository(ProductEntity).save(Product);
+        size = { ...size, ...data };
+        await BuffVnDataSource.getRepository(ProductEntity).save(size);
         return result;
     }
 
-    public async UpdateProduct(data: UpdateProductType): Promise<BaseResponseServiceType> {
+    public async Update(data: UpdateProductType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
         }
-        if (!data?.id) {
+        let id = data?.id;
+        if (!id) {
             result.status = false
             result.errors.push("Mã không được rỗng")
         }
 
-        if (!data?.name) {
-            result.status = false
-            result.errors.push("Tên không được rỗng")
-        }
         if (!data?.key) {
             result.status = false
             result.errors.push("Từ khóa không được rỗng")
         }
+        if (!data?.name) {
+            result.status = false
+            result.errors.push("Tên không được rỗng")
+        }
+        if (!data?.activity) {
+            result.status = false
+            result.errors.push("Hoạt động không được rỗng")
+        }
+        if (!data?.categoryId) {
+            result.status = false
+            result.errors.push("Danh mục không được rỗng")
+        }
+        if (!data?.description) {
+            result.status = false
+            result.errors.push("Mô tả không được rỗng")
+        }
+        if (!data?.gender) {
+            result.status = false
+            result.errors.push("Giới tính không được rỗng")
+        }
+        if (!data?.images) {
+            result.status = false
+            result.errors.push("Hình ảnh không được rỗng")
+        }
+        if (!data?.label) {
+            result.status = false
+            result.errors.push("Nhãn hiệu không được rỗng")
+        }
+        if (!data?.oldPrice) {
+            result.status = false
+            result.errors.push("Giá cũ không được rỗng")
+        }
+        if (!data?.price) {
+            result.status = false
+            result.errors.push("Giá không được rỗng")
+        }
+        if (!data?.sizeId) {
+            result.status = false
+            result.errors.push("Kích thước không được rỗng")
+        }
+        if (!data?.colorId) {
+            result.status = false
+            result.errors.push("Màu không được rỗng")
+        }
+        if (!data?.technology) {
+            result.status = false
+            result.errors.push("Công nghệ không được rỗng")
+        }
+        if (!data?.material) {
+            result.status = false
+            result.errors.push("Chất liệu không được rỗng")
+        }
+        if (!data?.status) {
+            result.status = false
+            result.errors.push("Trạng thái không được rỗng")
+        }
+
         if (!result.status) return result;
 
-        // let customer = await BuffVnDataSource.getRepository(CustomerEntity).findOne({
-        //     where: {
-        //         username: username,
-        //         password: password,
-        //         status: "active"
-        //     }
-        // });
+        let product = await this.GetById(id);
+        if (!product) {
+            result.status = false;
+            result.errors.push("Không tồn tại thông tin này!");
+        }
+        if (!result.status) return result;
 
-        // if (!customer) {
-        //     result.status = false;
-        //     result.errors.push("Ten dang nhap hoac mat khau khong dung");
-        // }
-
-        let Product = new ProductEntity({
-            id: data.id,
-            key: data.key,
-            name: data.name,
-            description: data.description,
-            images: data.images,
-            updatedAt: new Date(),
-            status: data.status,
-        })
-
-        //  await BuffVnDataSource.getRepository(ProductEntity).update(Product);
+        await BuffVnDataSource.getRepository(ProductEntity).update({ id }, data);
         return result;
     }
 
+    public async Delete(id: number): Promise<BaseResponseServiceType> {
+        const result: BaseResponseServiceType = {
+            status: true,
+            errors: []
+        }
+        if (!id) {
+            result.status = false
+            result.errors.push("Mã không được rỗng")
+        }
+        if (!result.status) return result;
 
+        let size = await this.GetById(id);
+
+        if (!size) {
+            result.status = false;
+            result.errors.push("Không tồn tại thông tin này!");
+        }
+        if (!result.status) return result;
+
+        await BuffVnDataSource.getRepository(ProductEntity).delete({ id });
+        return result;
+    }
 }

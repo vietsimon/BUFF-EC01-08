@@ -1,5 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { GenderType, StatusType } from "../type/CommonType";
+import CategoryEntity from "./CategoryEntity";
+import ColorEntity from "./ColorEntity";
 import SizeProductEntity from "./SizeProductEntity";
 
 @Entity()
@@ -14,6 +16,9 @@ export default class ProductEntity {
 
     @Column()
     categoryId: number
+
+    @ManyToOne(type => CategoryEntity)
+    category: CategoryEntity
 
     @Column({ nullable: false, unique: true })
     key: string
@@ -48,9 +53,17 @@ export default class ProductEntity {
     @Column({ nullable: false })
     label: string
 
-    @ManyToOne(() => SizeProductEntity, (size) => size.id)
-    @JoinColumn()
+    @Column({ nullable: true })
+    sizeId: number
+
+    @ManyToOne(type => SizeProductEntity)
     size: SizeProductEntity
+
+    @Column({ nullable: true })
+    colorId: number
+
+    @ManyToOne(type => ColorEntity)
+    color: ColorEntity
 
     @Column({ nullable: false, type: "text" })
     status: StatusType

@@ -4,6 +4,7 @@ import express = require("express");
 import CategoriesAdminController from "./controller/admin/CategoriesAdminController";
 import ColorAdminController from "./controller/admin/ColorAdminController";
 import SizeAdminController from "./controller/admin/SizeAdminController";
+import ProductAdminController from "./controller/admin/ProductAdminController";
 import AuthorizeWebController from "./controller/web/AuthorizeWebController";
 import PaymentWebController from "./controller/web/PaymentWebController";
 import { BuffVnDataSourceInit } from "./dataSource";
@@ -16,6 +17,7 @@ let controller = [
     new AuthorizeWebController(),
     new SizeAdminController(),
     new CategoriesAdminController(),
+    new ProductAdminController(),
     new ColorAdminController()
 ]
 app.use(bodyParser.json())
