@@ -1,9 +1,11 @@
 import { BuffVnDataSource } from "../dataSource";
 import CategoryEntity from "../entity/CategoryEntity";
-import { CreateCategoryType, UpdateCategoryType } from "../type/CategoryType";
+import { CategoryPagingType, CreateCategoryType, UpdateCategoryType } from "../type/CategoryType";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
+import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 
 export default class CategoryService {
+    private alias: string = "category"
     public async GetCategoryById(id: number) {
         let result = await BuffVnDataSource.getRepository(CategoryEntity).findOneBy({
             id
@@ -17,25 +19,16 @@ export default class CategoryService {
         });
         return result;
     }
-
     public async GetAllCategory() {
-        let data = await BuffVnDataSource.createQueryBuilder(CategoryEntity, "lv1")
-            .leftJoin(CategoryEntity, 'lv2', `lv2."parentId" = lv1.id`)
-            .leftJoin(CategoryEntity, 'lv3', `lv3."parentId" = lv2.id`)
-            .leftJoin(CategoryEntity, 'lv4', `lv4."parentId" = lv3.id`)
-            .select(`lv1.id`)
-            .addSelect(`lv1.key`)
-            .addSelect(`lv1.name`)
-            .addSelect(`lv2.id`)
-            .addSelect(`lv2.key`)
-            .addSelect(`lv2.name`)
-            .addSelect(`lv3.id`)
-            .addSelect(`lv3.key`)
-            .addSelect(`lv3.name`)
-            .addSelect(`lv4.id`)
-            .addSelect(`lv4.key`)
-            .addSelect(`lv4.name`)
+        let data = await BuffVnDataSource.createQueryBuilder(CategoryEntity, "cate")
+            .select(`cate.id`)
+            .addSelect(`cate.key`)
+            .addSelect(`cate.name`)
+            .addSelect(`cate.createdAt`)
+            .addSelect(`cate.updatedAt`)
+            .addSelect(`cate.status`)
             .execute();
+
         const result: DataResponseServiceType<any> = {
             status: true,
             errors: [],
@@ -44,6 +37,26 @@ export default class CategoryService {
         return result;
     }
 
+    public async GetCategoryPaging(query: IBaseFilterRequestType) {
+        let pageData: CategoryPagingType<any> = {} as any;
+        pageData.currentPage = query?.page ?? 1;
+        const recordsToSkip = (query.page - 1) * query.pageSize;
+        let queryData = BuffVnDataSource.createQueryBuilder(CategoryEntity, this.alias)
+        if (query.keySearch) 
+            queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
+      
+        pageData.total = await queryData.getCount();
+        pageData.datas = await queryData.skip(recordsToSkip)
+            .take(query.pageSize)
+            .execute();
+
+        const result: DataResponseServiceType<any> = {
+            status: true,
+            errors: [],
+            data: pageData
+        };
+        return result;
+    }
     public async CreateCategory(data: CreateCategoryType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
@@ -81,7 +94,8 @@ export default class CategoryService {
             status: true,
             errors: []
         }
-        if (!data?.id) {
+        let id = data?.id;
+        if (!id) {
             result.status = false
             result.errors.push("Mã không được rỗng")
         }
@@ -96,32 +110,43 @@ export default class CategoryService {
         }
         if (!result.status) return result;
 
-        // let customer = await BuffVnDataSource.getRepository(CustomerEntity).findOne({
-        //     where: {
-        //         username: username,
-        //         password: password,
-        //         status: "active"
-        //     }
-        // });
+        let category = await BuffVnDataSource.getRepository(CategoryEntity).findOne({
+            where: { id: data?.id }
+        });
+        if (!category) {
+            result.status = false;
+            result.errors.push("Không tồn tại thông tin này!");
+        }
+        if (!result.status) return result;
 
-        // if (!customer) {
-        //     result.status = false;
-        //     result.errors.push("Ten dang nhap hoac mat khau khong dung");
-        // }
+        var updateResult = await BuffVnDataSource.getRepository(CategoryEntity).update({ id }, data);
+        console.log(updateResult);
 
-        let category = new CategoryEntity({
-            id: data.id,
-            key: data.key,
-            name: data.name,
-            description: data.description,
-            parentId: data.parentId,
-            picture: data.picture,
-            sort: data.sort,
-            updatedAt: new Date(),
-            status: data.status,
-        })
+        return result;
+    }
 
-        //  await BuffVnDataSource.getRepository(CategoryEntity).update(category);
+    public async DeleteCategory(id: number): Promise<BaseResponseServiceType> {
+        const result: BaseResponseServiceType = {
+            status: true,
+            errors: []
+        }
+        if (!id) {
+            result.status = false
+            result.errors.push("Mã không được rỗng")
+        }
+        if (!result.status) return result;
+
+        let category = await BuffVnDataSource.getRepository(CategoryEntity).findOne({
+            where: { id: id }
+        });
+
+        if (!category) {
+            result.status = false;
+            result.errors.push("Không tồn tại thông tin này!");
+        }
+        if (!result.status) return result;
+
+        await BuffVnDataSource.getRepository(CategoryEntity).delete({ id });
         return result;
     }
 

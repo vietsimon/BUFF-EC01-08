@@ -1,4 +1,7 @@
+import { BasePagingType } from "./BasePagingType"
 import { StatusType } from "./CommonType"
+
+export type CategoryPagingType<T> = BasePagingType<T> 
 
 export type CreateCategoryType = {
     key: string
@@ -16,5 +19,5 @@ export type UpdateCategoryType = {
     description?: string
     picture?: string,
     sort?: number,
-    status:StatusType
+    status: StatusType
 }
