@@ -27,7 +27,7 @@ export default class CategoriesAdminController extends BaseController {
     private getCategoryAll = async (request: express.Request, response: express.Response) => {
         try {
             let service = new CategoryService();
-            let dataService = await service.GetAllCategory();
+            let dataService = await service.GetAllCategory(request.query);
             if (dataService.status)
                 return response.status(200).json(dataService);
             else return response.status(400).json({ errors: dataService.errors })

@@ -5,7 +5,7 @@ import { BaseResponseServiceType, DataResponseServiceType } from "../type/Common
 import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 
 export default class ColorService {
-    private alias: string = "colorProduct"
+    private alias: string = "color_product"
 
     private async GetById(id: number) {
         let result = await BuffVnDataSource.getRepository(ColorEntity).findOneBy({
@@ -61,8 +61,10 @@ export default class ColorService {
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
 
         pageData.total = await queryData.getCount();
-        pageData.datas = await queryData.skip(recordsToSkip)
-            .take(query.pageSize).select(`${this.alias}.*`)
+        pageData.datas = await queryData
+            .offset(recordsToSkip)
+            .limit(query.pageSize)
+            .select(`${this.alias}.*`)
             .getRawMany();
 
         let result: DataResponseServiceType<any> = {

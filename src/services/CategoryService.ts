@@ -37,13 +37,12 @@ export default class CategoryService {
         return result;
     }
 
-    public async GetAllCategory() {
-        let data = await BuffVnDataSource.createQueryBuilder(CategoryEntity, this.alias)
-            .select(`id`)
-            .addSelect(`key`)
-            .addSelect(`name`)
+    public async GetAllCategory(query?: any) {
+        let queryData = BuffVnDataSource.createQueryBuilder(CategoryEntity, this.alias)
+        if (query?.status)
+            queryData = queryData.where(`${this.alias}.status = :status`, { status: `${query.status}` });
+        let data = await queryData.select(`${this.alias}.*`)
             .getRawMany();
-
         const result: DataResponseServiceType<any> = {
             status: true,
             errors: [],

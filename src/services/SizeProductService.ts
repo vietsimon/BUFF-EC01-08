@@ -61,8 +61,8 @@ export default class SizeProductService {
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
 
         pageData.total = await queryData.getCount();
-        pageData.datas = await queryData.skip(recordsToSkip)
-            .take(query.pageSize).select(`${this.alias}.*`)
+        pageData.datas = await queryData.offset(recordsToSkip)
+            .limit(query.pageSize).select(`${this.alias}.*`)
             .getRawMany();
 
         let result: DataResponseServiceType<any> = {
