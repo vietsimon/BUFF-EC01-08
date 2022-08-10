@@ -8,6 +8,7 @@ export type CreateProductType = {
     name: string
     categoryId: number
     description: string
+    detail?: string
     price: number
     oldPrice: number
     images?: Array<string>
@@ -25,7 +26,8 @@ export type UpdateProductType = {
     key: string
     name: string
     categoryId: number
-    description: string
+    description: string,
+    detail?: string,
     price: number
     oldPrice: number
     images?: Array<string>

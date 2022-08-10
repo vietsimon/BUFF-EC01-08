@@ -1,7 +1,8 @@
 export type BasePagingType<T> = {
     total: number
     currentPage: number
-    // totalPage: number
+    pageSize: number
+    //totalPage: number
     datas: Array<T>
 }
 

@@ -1,16 +1,23 @@
 import { BuffVnDataSource } from "../dataSource";
-import ColorEntity from "../entity/ColorEntity";
-import { ColorPagingType, CreateColorType, UpdateColorType } from "../type/ColorType";
+import BlogEntity from "../entity/BlogEntity";
+import { BlogPagingType, CreateBlogType, UpdateBlogType } from "../type/BlogType";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
 import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 
-export default class ColorService {
-    private alias: string = "color_product"
+export default class BlogService {
+    private alias: string = "blog"
 
     private async GetById(id: number) {
-        let result = await BuffVnDataSource.getRepository(ColorEntity).findOneBy({
-            id
-        });
+        let result = await BuffVnDataSource.createQueryBuilder(BlogEntity, this.alias)
+            .where(`${this.alias}.id = :id`, { id: id })
+            .leftJoin(`${this.alias}.category`, 'category')
+            .leftJoin(`${this.alias}.size`, 'size')
+            .leftJoin(`${this.alias}.color`, 'color')
+            .select(`${this.alias}.*`)
+            .addSelect([`category.id`, `category.name`])
+            .addSelect([`size.id`, `size.name`])
+            .addSelect([`color.id`, `color.name`])
+            .getRawOne()
         return result;
     }
     public async GetDetail(id: number) {
@@ -37,35 +44,24 @@ export default class ColorService {
         return result;
     }
 
-    public async GetAll() {
-        let data = await BuffVnDataSource.createQueryBuilder(ColorEntity, this.alias)
-            .select(`id`)
-            .addSelect(`name`)
-            .addSelect(`color`)
-            .getRawMany();
-
-        const result: DataResponseServiceType<any> = {
-            status: true,
-            errors: [],
-            data
-        }
-        return result;
-    }
-
     public async GetPaging(query: IBaseFilterRequestType) {
-        let pageData: ColorPagingType<any> = {} as any;
+        let pageData: BlogPagingType<any> = {} as any;
         pageData.currentPage = query?.page ?? 1;
         pageData.pageSize = query?.pageSize ?? 10;
         let recordsToSkip = (query.page - 1) * pageData.pageSize;
-        let queryData = BuffVnDataSource.createQueryBuilder(ColorEntity, this.alias)
+        let queryData = BuffVnDataSource.createQueryBuilder(BlogEntity, this.alias)
         if (query.keySearch)
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
 
+        if (query.status)
+            queryData = queryData.where(`${this.alias}.status like :status`, { status: `%${query.status}%` });
+
         pageData.total = await queryData.getCount();
-        pageData.datas = await queryData
-            .offset(recordsToSkip)
-            .limit(query.pageSize)
+        pageData.datas = await queryData.skip(recordsToSkip)
+            .take(query.pageSize)
+            .leftJoin(`${this.alias}.category`, 'category')
             .select(`${this.alias}.*`)
+            .addSelect([`category.id`, `category.name`])
             .getRawMany();
 
         let result: DataResponseServiceType<any> = {
@@ -76,34 +72,51 @@ export default class ColorService {
         return result;
     }
 
-    public async Create(data: CreateColorType): Promise<BaseResponseServiceType> {
+    public async Create(data: CreateBlogType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
+        }
+        if (!data?.key) {
+            result.status = false
+            result.errors.push("Từ khóa không được rỗng")
         }
         if (!data?.name) {
             result.status = false
             result.errors.push("Tên không được rỗng")
         }
-        if (!data?.color) {
+
+        if (!data?.categoryId) {
             result.status = false
-            result.errors.push("Màu không được rỗng")
+            result.errors.push("Danh mục không được rỗng")
         }
+        if (!data?.description) {
+            result.status = false
+            result.errors.push("Mô tả không được rỗng")
+        }
+
+        if (!data?.images) {
+            result.status = false
+            result.errors.push("Hình ảnh không được rỗng")
+        }
+
+        if (!data?.status) {
+            result.status = false
+            result.errors.push("Trạng thái không được rỗng")
+        }
+
         if (!result.status) return result;
 
-        let size = new ColorEntity({
-            name: data.name,
-            color: data.color,
+        let size = new BlogEntity({
             updatedAt: new Date(),
-            createdAt: new Date(),
-            status: data.status,
+            createdAt: new Date()
         })
-
-        await BuffVnDataSource.getRepository(ColorEntity).save(size);
+        size = { ...size, ...data };
+        await BuffVnDataSource.getRepository(BlogEntity).save(size);
         return result;
     }
 
-    public async Update(data: UpdateColorType): Promise<BaseResponseServiceType> {
+    public async Update(data: UpdateBlogType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
@@ -114,24 +127,44 @@ export default class ColorService {
             result.errors.push("Mã không được rỗng")
         }
 
+        if (!data?.key) {
+            result.status = false
+            result.errors.push("Từ khóa không được rỗng")
+        }
         if (!data?.name) {
             result.status = false
             result.errors.push("Tên không được rỗng")
         }
-        if (!data?.color) {
+
+        if (!data?.categoryId) {
             result.status = false
-            result.errors.push("Màu không được rỗng")
+            result.errors.push("Danh mục không được rỗng")
         }
+        if (!data?.description) {
+            result.status = false
+            result.errors.push("Mô tả không được rỗng")
+        }
+
+        if (!data?.images) {
+            result.status = false
+            result.errors.push("Hình ảnh không được rỗng")
+        }
+
+        if (!data?.status) {
+            result.status = false
+            result.errors.push("Trạng thái không được rỗng")
+        }
+
         if (!result.status) return result;
 
-        let size = await this.GetById(id);
-        if (!size) {
+        let product = await this.GetById(id);
+        if (!product) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
         if (!result.status) return result;
 
-        await BuffVnDataSource.getRepository(ColorEntity).update({ id }, data);
+        await BuffVnDataSource.getRepository(BlogEntity).update({ id }, data);
         return result;
     }
 
@@ -154,7 +187,7 @@ export default class ColorService {
         }
         if (!result.status) return result;
 
-        await BuffVnDataSource.getRepository(ColorEntity).delete({ id });
+        await BuffVnDataSource.getRepository(BlogEntity).delete({ id });
         return result;
     }
 }

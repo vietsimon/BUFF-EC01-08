@@ -55,7 +55,8 @@ export default class SizeProductService {
     public async GetPaging(query: IBaseFilterRequestType) {
         let pageData: SizeProductPagingType<any> = {} as any;
         pageData.currentPage = query?.page ?? 1;
-        let recordsToSkip = (query.page - 1) * query.pageSize;
+        pageData.pageSize = query?.pageSize ?? 10;
+        let recordsToSkip = (query.page - 1) * pageData.pageSize;
         let queryData = BuffVnDataSource.createQueryBuilder(SizeProductEntity, this.alias)
         if (query.keySearch)
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });

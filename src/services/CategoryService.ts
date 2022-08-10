@@ -54,7 +54,8 @@ export default class CategoryService {
     public async GetCategoryPaging(query: IBaseFilterRequestType) {
         let pageData: CategoryPagingType<any> = {} as any;
         pageData.currentPage = query?.page ?? 1;
-        const recordsToSkip = (query.page - 1) * query.pageSize;
+        pageData.pageSize = query?.pageSize ?? 10;
+        let recordsToSkip = (query.page - 1) * pageData.pageSize;
         let queryData = BuffVnDataSource.createQueryBuilder(CategoryEntity, this.alias)
         if (query.keySearch)
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });

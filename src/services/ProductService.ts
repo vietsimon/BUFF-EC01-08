@@ -47,7 +47,8 @@ export default class ProductService {
     public async GetPaging(query: IBaseFilterRequestType) {
         let pageData: ProductPagingType<any> = {} as any;
         pageData.currentPage = query?.page ?? 1;
-        let recordsToSkip = (query.page - 1) * query.pageSize;
+        pageData.pageSize = query?.pageSize ?? 10;
+        let recordsToSkip = (query.page - 1) * pageData.pageSize;
         let queryData = BuffVnDataSource.createQueryBuilder(ProductEntity, this.alias)
         if (query.keySearch)
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
@@ -56,8 +57,8 @@ export default class ProductService {
             queryData = queryData.where(`${this.alias}.status like :status`, { status: `%${query.status}%` });
 
         pageData.total = await queryData.getCount();
-        pageData.datas = await queryData.skip(recordsToSkip)
-            .take(query.pageSize)
+        pageData.datas = await queryData.offset(recordsToSkip)
+            .limit(query.pageSize)
             .leftJoin(`${this.alias}.category`, 'category')
             .leftJoin(`${this.alias}.size`, 'size')
             .leftJoin(`${this.alias}.color`, 'color')
@@ -257,6 +258,22 @@ export default class ProductService {
         if (!result.status) return result;
 
         await BuffVnDataSource.getRepository(ProductEntity).delete({ id });
+        return result;
+    }
+
+
+    public async GetLastest(query?: any) {
+        query.status = 'active';
+        let queryData = BuffVnDataSource.createQueryBuilder(ProductEntity, this.alias)
+        if (query?.status)
+            queryData = queryData.where(`${this.alias}.status = :status`, { status: `${query.status}` });
+        let data = await queryData.select(`${this.alias}.*`).orderBy(`${this.alias}.createdAt`, "DESC")
+            .limit(5).getRawMany();
+        const result: DataResponseServiceType<any> = {
+            status: true,
+            errors: [],
+            data
+        }
         return result;
     }
 }
