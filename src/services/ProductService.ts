@@ -44,7 +44,8 @@ export default class ProductService {
         return result;
     }
 
-    public async GetPaging(query: IBaseFilterRequestType) {
+    public async GetPaging(query: any) {
+
         let pageData: ProductPagingType<any> = {} as any;
         pageData.currentPage = query?.page ?? 1;
         pageData.pageSize = query?.pageSize ?? 10;
@@ -55,6 +56,9 @@ export default class ProductService {
 
         if (query.status)
             queryData = queryData.where(`${this.alias}.status like :status`, { status: `%${query.status}%` });
+
+        if (query?.categoryId)
+            queryData = queryData.where(`${this.alias}.categoryId = :categoryId`, { categoryId: query.categoryId });
 
         pageData.total = await queryData.getCount();
         pageData.datas = await queryData.offset(recordsToSkip)
