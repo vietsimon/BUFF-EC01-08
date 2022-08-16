@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
+    "run-start": "npx ts-node src/index.ts",
     "postinstall": "tsc",
     "watch": "nodemon --watch src/** --ext ts,json --exec npx ts-node src/index.ts",
     "watch-ts": "tsc -w",

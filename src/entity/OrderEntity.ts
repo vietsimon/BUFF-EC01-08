@@ -14,6 +14,9 @@ export default class OrderEntity {
     @Column({ nullable: false, unique: true })
     orderCode: string
 
+    @Column()
+    guestId: number
+
     @OneToOne(() => CustomerEntity)
     @JoinColumn()
     guest: CustomerEntity

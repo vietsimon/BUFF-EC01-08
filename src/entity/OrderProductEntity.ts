@@ -13,6 +13,9 @@ export default class OrderProductEntity {
     @PrimaryGeneratedColumn({ type: "bigint" })
     id: number
 
+    @Column()
+    orderId:number 
+
     @OneToOne(() => OrderEntity)
     @JoinColumn()
     order: OrderEntity
@@ -20,9 +23,15 @@ export default class OrderProductEntity {
     @Column({ nullable: false, default: 0 })
     quantity: number
 
+    @Column()
+    productId:number 
+
     @OneToOne(() => ProductEntity)
     @JoinColumn()
     product: ProductEntity
+
+    @Column({ nullable: true })
+    sizeId:number 
 
     @OneToOne(() => SizeProductEntity)
     @JoinColumn()

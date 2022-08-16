@@ -28,19 +28,21 @@ export default class PaymentWebController extends BaseController {
 
         var createDate = dayjs().format("YYYYMMDDHHmmss")
         let orderId = Math.round(Math.random() * 10000).toString()
-
+        let currCode= body?.currencyCode;
+        if(!currCode) currCode="VND";
         let vnp_Params = {
             vnp_Version: '2.1.0',
             vnp_Command: 'pay',
             vnp_TmnCode: "FVPCHE3X",
             vnp_Locale: "vn",
-            vnp_CurrCode: "VND",
+            vnp_CurrCode: currCode,
             vnp_TxnRef: orderId,
             vnp_OrderInfo: body.content,
             vnp_OrderType: "billpayment",
             vnp_Amount: body.price * 100,
             vnp_CreateDate: createDate,
-            vnp_ReturnUrl: "https://ec01-08-payment.herokuapp.com/payment/vnpay/return",
+            vnp_ReturnUrl: body.returnUrl,
+            //vnp_ReturnUrl: "https://ec01-08-payment.herokuapp.com/payment/vnpay/return",
             vnp_IpAddr: request.socket.remoteAddress
         }
 
