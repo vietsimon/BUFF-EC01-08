@@ -5,7 +5,7 @@ export type OrderPagingType<T> = BasePagingType<T>
 
 export type CreateOrderType = {
     orderCode: string
-    guestId: string
+    guestId: number
     totalPrice: number
     shippingAddress: string
     note?: string,
@@ -24,5 +24,6 @@ export type UpdateOrderType = {
     discountCode?: string,
     discountFee?: number,
     status: StatusOrderType,
+    orderCode: string
 }
 

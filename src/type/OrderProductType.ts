@@ -4,11 +4,12 @@ import { StatusType } from "./CommonType"
 export type OrderProductPagingType<T> = BasePagingType<T> 
 
 export type CreateOrderProductType = {
-    orderId: string
+    orderId: number
     quantity: number
-    productId: string
+    productId: number
     sizeId?: number
     currentPrice: number
+    status : string
 }
 export type UpdateOrderProductType = {
     id: number

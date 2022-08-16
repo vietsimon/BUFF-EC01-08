@@ -146,7 +146,7 @@ export default class OrderProductService {
         }
         if (!result.status) return result;
 
-        await BuffVnDataSource.getRepository(OrderProductEntity).update({ id }, data);
+        await BuffVnDataSource.getRepository(OrderProductEntity).update({ id }, data as any);
         return result;
     }
 

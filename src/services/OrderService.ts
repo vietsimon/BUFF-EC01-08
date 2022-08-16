@@ -104,7 +104,7 @@ export default class OrderService {
         // data.key=Common.replaceAccents( data.name);
         let order = new OrderEntity({
             orderCode: data.orderCode,
-            guestId: data.guestId,
+            guestId: data.guestId ,
             totalPrice: data.totalPrice,
             shippingAddress: data.shippingAddress,
             note: data.note,
@@ -176,7 +176,7 @@ export default class OrderService {
         }
         if (!result.status) return result;
 
-        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, data);
+        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, data as any);
         return result;
     }
 

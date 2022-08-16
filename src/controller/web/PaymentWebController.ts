@@ -21,6 +21,8 @@ export default class PaymentWebController extends BaseController {
             productName: string,
             price: number,
             content: string
+            currencyCode: string
+            returnUrl: string
         } = request.body;
         
         if(!body.productName) return response.status(400).json({message : "Missing product name"})

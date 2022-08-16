@@ -40,4 +40,13 @@ export default class OrderProductEntity {
     @Column({ nullable: false })
     currentPrice: number
 
+    @Column({ nullable: true, type: "time without time zone" })
+    updatedAt: Date
+
+    @Column({ nullable: true, type: "time without time zone" })
+    createdAt: Date
+    
+    @Column()
+    status : string
+
 }
