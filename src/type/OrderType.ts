@@ -23,6 +23,6 @@ export type UpdateOrderType = {
     shippingFee?: number,
     discountCode?: string,
     discountFee?: number,
-    status: StatusOrderType
+    status: StatusOrderType,
 }
 
