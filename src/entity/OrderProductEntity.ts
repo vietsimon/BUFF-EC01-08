@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import OrderEntity from "./OrderEntity";
 import ProductEntity from "./ProductEntity";
 import SizeProductEntity from "./SizeProductEntity";
@@ -13,40 +13,27 @@ export default class OrderProductEntity {
     @PrimaryGeneratedColumn({ type: "bigint" })
     id: number
 
-    @Column()
-    orderId:number 
-
-    @OneToOne(() => OrderEntity)
-    @JoinColumn()
-    order: OrderEntity
-
     @Column({ nullable: false, default: 0 })
     quantity: number
 
-    @Column()
-    productId:number 
-
-    @OneToOne(() => ProductEntity)
+    @ManyToOne(() => ProductEntity)
     @JoinColumn()
     product: ProductEntity
 
-    @Column({ nullable: true })
-    sizeId:number 
-
-    @OneToOne(() => SizeProductEntity)
+    @ManyToOne(() => SizeProductEntity)
     @JoinColumn()
     size: SizeProductEntity
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, type: "decimal",default:0 })
     currentPrice: number
 
-    @Column({ nullable: true, type: "time without time zone" })
+    @Column({ nullable: true, type: "timestamp with time zone" })
     updatedAt: Date
 
-    @Column({ nullable: true, type: "time without time zone" })
+    @Column({ nullable: true, type: "timestamp with time zone" })
     createdAt: Date
     
-    @Column()
+    @Column({default:"active"})
     status : string
 
 }

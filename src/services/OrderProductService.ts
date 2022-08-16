@@ -1,8 +1,10 @@
 import { BuffVnDataSource } from "../dataSource";
 import OrderProductEntity from "../entity/OrderProductEntity";
-import { OrderProductPagingType, CreateOrderProductType, UpdateOrderProductType } from "../type/OrderProductType";
+import ProductEntity from "../entity/ProductEntity";
+import SizeProductEntity from "../entity/SizeProductEntity";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
 import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
+import { CreateOrderProductType, OrderProductPagingType, UpdateOrderProductType } from "../type/OrderProductType";
 
 export default class OrderProductService {
     private alias: string = "orderproduct"
@@ -59,50 +61,6 @@ export default class OrderProductService {
         };
         return result;
     }
-    public async CreateOrderProduct(data: CreateOrderProductType): Promise<BaseResponseServiceType> {
-        const result: BaseResponseServiceType = {
-            status: true,
-            errors: []
-        }
-
-        if (!data?.orderId) {
-            result.status = false
-            result.errors.push("Mã hóa đơn không được rỗng")
-        }
-        if (!data?.productId) {
-            result.status = false
-            result.errors.push("Mã sản phẩm không được rỗng")
-        }
-        if (data?.quantity<=0) {
-            result.status = false
-            result.errors.push("Số lượng không hợp lệ")
-        }
-        // if (!data?.sizeId) {
-        //     result.status = false
-        //     result.errors.push("Kích thước không được rỗng")
-        // }
-
-      if (data?.currentPrice<=0) {
-            result.status = false
-            result.errors.push("Giá không hợp lệ")
-        }
-      
-        if (!result.status) return result;
-
-        let orderProduct = new OrderProductEntity({
-            orderId: data.orderId,
-            productId: data.productId,
-            quantity: data.quantity,
-            sizeId: data.sizeId,
-            currentPrice: data.currentPrice,
-            updatedAt: new Date(),
-            createdAt: new Date(),
-            status: data.status,
-        })
-
-        await BuffVnDataSource.getRepository(OrderProductEntity).save(orderProduct);
-        return result;
-    }
 
     public async UpdateOrderProduct(data: UpdateOrderProductType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
@@ -123,7 +81,7 @@ export default class OrderProductService {
             result.status = false
             result.errors.push("Mã sản phẩm không được rỗng")
         }
-        if (data?.quantity<=0) {
+        if (data?.quantity <= 0) {
             result.status = false
             result.errors.push("Số lượng không hợp lệ")
         }
@@ -132,11 +90,11 @@ export default class OrderProductService {
         //     result.errors.push("Kích thước không được rỗng")
         // }
 
-      if (data?.currentPrice<=0) {
+        if (data?.currentPrice <= 0) {
             result.status = false
             result.errors.push("Giá không hợp lệ")
         }
-       
+
         if (!result.status) return result;
 
         let orderProduct = await this.GetById(id);

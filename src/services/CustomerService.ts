@@ -102,4 +102,17 @@ export default class CustomerService {
         }
         return result
     }
+    public async GetCustomerInformationByUsername(username: string) {
+        let customer = await BuffVnDataSource.getRepository(CustomerEntity).findOne({
+            where: {
+                username: username,
+                status: "active"
+            }
+        });
+
+        if (!customer) {
+          return null;
+        }
+        return customer;
+    }
 }

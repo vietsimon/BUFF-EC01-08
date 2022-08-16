@@ -3,12 +3,21 @@ import OrderEntity from "../entity/OrderEntity";
 import { OrderPagingType, CreateOrderType, UpdateOrderType } from "../type/OrderType";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
 import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
+import Common from "../ultils/common";
+import OrderProductEntity from "../entity/OrderProductEntity";
+import ProductEntity from "../entity/ProductEntity";
+import SizeProductEntity from "../entity/SizeProductEntity";
 
 export default class OrderService {
     private alias: string = "order"
-    private async GetById(id: number) {
-        let result = await BuffVnDataSource.getRepository(OrderEntity).findOneBy({
-            id
+    public async GetById(id: number) {
+        let result = await BuffVnDataSource.getRepository(OrderEntity).findOne({
+            where: {
+                id
+            },
+            relations: {
+                orderProducts: true
+            }
         });
         return result;
     }
@@ -59,10 +68,11 @@ export default class OrderService {
         };
         return result;
     }
-    public async CreateOrder(data: CreateOrderType): Promise<BaseResponseServiceType> {
-        const result: BaseResponseServiceType = {
+    public async CreateOrder(data: CreateOrderType) {
+        const result: DataResponseServiceType<any> = {
             status: true,
-            errors: []
+            errors: [],
+            data: {}
         }
         if (!data?.orderCode) {
             result.status = false
@@ -72,7 +82,7 @@ export default class OrderService {
             result.status = false
             result.errors.push("Khách hàng không được rỗng")
         }
-        if (data?.totalPrice<=0) {
+        if (data?.totalPrice <= 0) {
             result.status = false
             result.errors.push("Giá không hợp lệ")
         }
@@ -80,11 +90,11 @@ export default class OrderService {
             result.status = false
             result.errors.push("Địa chỉ không được rỗng")
         }
-        if (!data?.note) {
-            result.status = false
-            result.errors.push("Ghi chú không được rỗng")
-        }
-       
+        // if (!data?.note) {
+        //     result.status = false
+        //     result.errors.push("Ghi chú không được rỗng")
+        // }
+
         // if (data?.shippingFee<=0) {
         //     result.status = false
         //     result.errors.push("Giá Shipping không hợp lệ")
@@ -101,23 +111,44 @@ export default class OrderService {
 
         if (!result.status) return result;
 
-        // data.key=Common.replaceAccents( data.name);
+        let productOrderEntities = data?.items.map(x => new OrderProductEntity({
+            product: {
+                id: x.productId
+            } as any,
+            quantity: x.quantity,
+            size: {
+                id: x.sizeId
+            } as any,
+            currentPrice: x.currentPrice,
+            updatedAt: new Date(),
+            createdAt: new Date(),
+            status: 'active',
+        }))
+        productOrderEntities = await BuffVnDataSource.getRepository(OrderProductEntity).save(productOrderEntities);
+
         let order = new OrderEntity({
             orderCode: data.orderCode,
-            guestId: data.guestId ,
+            guestId: data.guestId,
             totalPrice: data.totalPrice,
             shippingAddress: data.shippingAddress,
             note: data.note,
             shippingFee: data.shippingFee,
             discountCode: data.discountCode,
             discountFee: data.discountFee,
-            updatedAt: new Date(),
 
+            shippingMethod: data.shippingMethod,
+            shippingProvinceId: data.shippingProvinceId,
+            shippingDistrictId: data.shippingDistrictId,
+            shippingWardId: data.shippingWardId,
+            paymentMethod: data.paymentMethod,
+
+            updatedAt: new Date(),
             createdAt: new Date(),
             status: data.status,
+            orderProducts: productOrderEntities
         })
-
         await BuffVnDataSource.getRepository(OrderEntity).save(order);
+        result.data = order;
         return result;
     }
 
@@ -140,7 +171,7 @@ export default class OrderService {
             result.status = false
             result.errors.push("Khách hàng không được rỗng")
         }
-        if (data?.totalPrice<=0) {
+        if (data?.totalPrice <= 0) {
             result.status = false
             result.errors.push("Giá không hợp lệ")
         }
@@ -148,11 +179,11 @@ export default class OrderService {
             result.status = false
             result.errors.push("Địa chỉ không được rỗng")
         }
-        if (!data?.note) {
-            result.status = false
-            result.errors.push("Ghi chú không được rỗng")
-        }
-       
+        // if (!data?.note) {
+        //     result.status = false
+        //     result.errors.push("Ghi chú không được rỗng")
+        // }
+
         // if (data?.shippingFee<=0) {
         //     result.status = false
         //     result.errors.push("Giá Shipping không hợp lệ")

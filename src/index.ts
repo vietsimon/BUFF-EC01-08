@@ -14,6 +14,7 @@ import BlogCategoriesAdminController from "./controller/admin/BlogCategoriesAdmi
 import BlogCategoriesWebController from "./controller/web/BlogCategoriesWebController";
 import BlogWebController from "./controller/web/BlogWebController";
 import BlogAdminController from "./controller/admin/BlogAdminController";
+import OrderWebController from "./controller/web/OrderWebController";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ let controller = [
     new CategoriesWebController(),
     new ProductWebController(),
     new BlogWebController(),
+    new OrderWebController(),
 
     new SizeAdminController(),
     new CategoriesAdminController(),

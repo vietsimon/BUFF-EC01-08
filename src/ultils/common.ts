@@ -26,10 +26,20 @@ export default class Common {
             .digest('hex');
         return hash;
     }
+    public static randomId(length: number) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() *
+                charactersLength));
+        }
+        return result;
+    }
     /**
      * Replaces all accented chars with regular ones
      */
-    public static replaceAccents(str:string) {
+    public static replaceAccents(str: string) {
         // Verifies if the String has accents and replace them
         if (str.search(/[\xC0-\xFF]/g) > -1) {
             str = str
