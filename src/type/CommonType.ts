@@ -13,5 +13,5 @@ export type DataResponseServiceType<T> = BaseResponseServiceType & {
 // }
 
 export type StatusType = "active" | "inactive"
-export type StatusOrderType = "new" |"package"| "shipping"| "recieved"
+export type StatusOrderType = "new" |"paid"|"cancel" |"package"| "shipping"| "recieved"
 export type GenderType = "all" | "man" | "women" | "kid"

@@ -1,6 +1,6 @@
 import { BuffVnDataSource } from "../dataSource";
 import OrderEntity from "../entity/OrderEntity";
-import { OrderPagingType, CreateOrderType, UpdateOrderType } from "../type/OrderType";
+import { OrderPagingType, CreateOrderType, UpdateOrderType, OrderPaymentStatusType } from "../type/OrderType";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
 import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 import Common from "../ultils/common";
@@ -207,6 +207,67 @@ export default class OrderService {
         }
         if (!result.status) return result;
 
+        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, data as any);
+        return result;
+    }
+    public async PaymentSuccess(data: OrderPaymentStatusType): Promise<BaseResponseServiceType> {
+        const result: BaseResponseServiceType = {
+            status: true,
+            errors: []
+        }
+        let id = data?.orderId;
+        if (!id) {
+            result.status = false
+            result.errors.push("Mã không được rỗng")
+        }
+
+        if (!result.status) return result;
+
+        let order = await this.GetById(id);
+        if (!order) {
+            result.status = false;
+            result.errors.push("Không tồn tại thông tin này!");
+        }
+        
+        if (order.status!="new") {
+            result.status = false;
+            result.errors.push("Đơn hàng này đã hết hạn!");
+        }
+        if (!result.status) return result;
+
+        order.status='paid';
+        order.updatedAt=new Date();
+        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, data as any);
+        return result;
+    }
+
+    public async PaymentCancel(data: OrderPaymentStatusType): Promise<BaseResponseServiceType> {
+        const result: BaseResponseServiceType = {
+            status: true,
+            errors: []
+        }
+        let id = data?.orderId;
+        if (!id) {
+            result.status = false
+            result.errors.push("Mã không được rỗng")
+        }
+
+        if (!result.status) return result;
+
+        let order = await this.GetById(id);
+        if (!order) {
+            result.status = false;
+            result.errors.push("Không tồn tại thông tin này!");
+        }
+        
+        if (order.status!="new") {
+            result.status = false;
+            result.errors.push("Đơn hàng này đã hết hạn!");
+        }
+        if (!result.status) return result;
+
+        order.status='cancel';
+        order.updatedAt=new Date();
         await BuffVnDataSource.getRepository(OrderEntity).update({ id }, data as any);
         return result;
     }

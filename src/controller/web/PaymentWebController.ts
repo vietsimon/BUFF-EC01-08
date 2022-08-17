@@ -16,6 +16,8 @@ export default class PaymentWebController extends BaseController {
     protected initializeRouter(): void {
         this._router.post("/payment/vn-pay/create-order-payment", this.createOrderPayment)
         this._router.post("/payment/vn-pay/create-payment", this.createVnpayPayment)
+        this._router.post("/payment/payment/success", this.OrderPaymentSuccess)
+        this._router.post("/payment/payment/cancel", this.OrderPaymentCancel)
     }
     private createOrderPayment = async (request: express.Request, response: express.Response) => {
         let body = request.body;
@@ -94,5 +96,37 @@ export default class PaymentWebController extends BaseController {
         vnp_Params['vnp_SecureHash'] = signed;
         let vnpUrl = PaymentConfig.Vnpay.vnPayUrl + '?' + qs.stringify(vnp_Params, { encode: false });
         response.json({ redirectUrl: vnpUrl })
+    }
+
+    private OrderPaymentSuccess = async (request: express.Request, response: express.Response) => {
+        let data = request.body as any;
+        try {
+            let service = new OrderService();
+            let dataService = await service.PaymentSuccess(data);
+            if (dataService.status) {
+                return response.status(200).json(dataService);
+            }
+            else return response.status(400).json({ errors: dataService.errors })
+        } catch (error) {
+            return response.status(500).json({
+                error: error.message
+            })
+        }
+    }
+
+    private OrderPaymentCancel = async (request: express.Request, response: express.Response) => {
+        let data = request.body as any;
+        try {
+            let service = new OrderService();
+            let dataService = await service.PaymentCancel(data);
+            if (dataService.status) {
+                return response.status(200).json(dataService);
+            }
+            else return response.status(400).json({ errors: dataService.errors })
+        } catch (error) {
+            return response.status(500).json({
+                error: error.message
+            })
+        }
     }
 }
