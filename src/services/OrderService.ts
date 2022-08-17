@@ -10,13 +10,13 @@ import SizeProductEntity from "../entity/SizeProductEntity";
 
 export default class OrderService {
     private alias: string = "order"
-    public async GetById(id: number) {
+    public async GetById(id: number, relationOrderProduct : boolean = true) {
         let result = await BuffVnDataSource.getRepository(OrderEntity).findOne({
             where: {
                 id
             },
             relations: {
-                orderProducts: true
+                orderProducts: relationOrderProduct
             }
         });
         return result;
@@ -223,7 +223,7 @@ export default class OrderService {
 
         if (!result.status) return result;
 
-        let order = await this.GetById(id);
+        let order = await this.GetById(id, false);
         if (!order) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
@@ -237,7 +237,7 @@ export default class OrderService {
 
         order.status='paid';
         order.updatedAt=new Date();
-        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, data as any);
+        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, order);
         return result;
     }
 
@@ -254,7 +254,7 @@ export default class OrderService {
 
         if (!result.status) return result;
 
-        let order = await this.GetById(id);
+        let order = await this.GetById(id,false);
         if (!order) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
@@ -268,7 +268,7 @@ export default class OrderService {
 
         order.status='cancel';
         order.updatedAt=new Date();
-        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, data as any);
+        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, order);
         return result;
     }
 

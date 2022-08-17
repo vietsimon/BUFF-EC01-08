@@ -43,7 +43,8 @@ export default class AuthorizeWebController extends BaseController {
                     username
                 }, SecretConfig.JwtCustomer, { expiresIn: "2h" })
                 return response.status(200).json({
-                    token: token
+                    token: token,
+                    fullname : dataService.data.fullname
                 });
             }
             else return response.status(400).json({ errors: dataService.errors })

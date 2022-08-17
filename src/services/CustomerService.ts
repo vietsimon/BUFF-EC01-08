@@ -1,6 +1,6 @@
 import { BuffVnDataSource } from "../dataSource";
 import CustomerEntity from "../entity/CustomerEntity";
-import { BaseResponseServiceType } from "../type/CommonType";
+import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
 import { RegisterCustomerType } from "../type/CustomerType";
 import Common from "../ultils/common";
 
@@ -72,10 +72,11 @@ export default class CustomerService {
         return result;
     }
 
-    public async LoginCustomer(username: string, password: string): Promise<BaseResponseServiceType> {
-        const result: BaseResponseServiceType = {
+    public async LoginCustomer(username: string, password: string): Promise<DataResponseServiceType<any>> {
+        const result: DataResponseServiceType<any> = {
             status: true,
-            errors: []
+            errors: [],
+            data: undefined
         }
         if (!username) {
             result.status = false;
@@ -99,6 +100,9 @@ export default class CustomerService {
         if (!customer) {
             result.status = false;
             result.errors.push("Ten dang nhap hoac mat khau khong dung");
+        }
+        result.data = {
+            fullname : customer.fullName
         }
         return result
     }

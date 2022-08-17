@@ -11,12 +11,8 @@ export default class BlogService {
         let result = await BuffVnDataSource.createQueryBuilder(BlogEntity, this.alias)
             .where(`${this.alias}.id = :id`, { id: id })
             .leftJoin(`${this.alias}.category`, 'category')
-            .leftJoin(`${this.alias}.size`, 'size')
-            .leftJoin(`${this.alias}.color`, 'color')
             .select(`${this.alias}.*`)
             .addSelect([`category.id`, `category.name`])
-            .addSelect([`size.id`, `size.name`])
-            .addSelect([`color.id`, `color.name`])
             .getRawOne()
         return result;
     }
@@ -57,8 +53,8 @@ export default class BlogService {
             queryData = queryData.where(`${this.alias}.status like :status`, { status: `%${query.status}%` });
 
         pageData.total = await queryData.getCount();
-        pageData.datas = await queryData.skip(recordsToSkip)
-            .take(query.pageSize)
+        pageData.datas = await queryData.offset(recordsToSkip)
+            .limit(query.pageSize)
             .leftJoin(`${this.alias}.category`, 'category')
             .select(`${this.alias}.*`)
             .addSelect([`category.id`, `category.name`])
