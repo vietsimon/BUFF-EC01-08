@@ -17,7 +17,7 @@ export default function HeaderTopComponent() {
                         <div className="col-md-12 col-sm-12 navbar-contact">
                             <ul className="top-link list-inline">
                                 <li><a href="tel:0987654321"  ><i className="fa fa-phone icon"></i> Hotline :<span> 0987654321</span></a></li>
-                                <li ><a href="mailto:aaa@gmail.com" ><i className="fa fa-envelope icon"></i> Email :<span> aaa@gmail.com</span></a></li></ul>
+                                <li ><a href="mailto:aaa@gmail.com" ><i className="fa fa-envelope icon"></i> Email :<span> nhuyhoang2609@gmail.com</span></a></li></ul>
                         </div>
                     </div>
                     <div className="header-top-right collapsed-block text-right col-md-5 col-sm-6 col-xs-12">

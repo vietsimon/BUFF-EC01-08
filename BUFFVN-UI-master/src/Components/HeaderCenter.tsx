@@ -28,7 +28,7 @@ export default function HeaderCenterComponent() {
                                     </select>
                                 </div>
 
-                                <input className="autosearch-input form-control" type="text" value="" size={50} placeholder="Enter keywords to search..." name="search" />
+                                <input className="autosearch-input form-control" type="text" value="" size={50} placeholder="Nhập vào..." name="search" />
                                 <span className="input-group-btn">
                                     <button type="submit" className="button-search btn btn-primary" name="submit_search"><i className="fa fa-search"></i></button>
                                 </span>
@@ -39,8 +39,8 @@ export default function HeaderCenterComponent() {
 
                     <div className="phone-contact col-md-2  hidden-md hidden-sm hidden-xs">
                         <div className="inner-info">
-                            <strong>Call us Now:</strong><br />
-                            <span>Toll free:  0123-456-789</span>
+                            <strong>Gọi cho chúng tôi:</strong><br />
+                            <span>Số điện thoại:  091249503</span>
                         </div>
                     </div>
 

@@ -196,7 +196,7 @@ export default function HeaderBottomComponent() {
                                                                         <div className="col-md-12">
                                                                             <ul className="row-list">
                                                                                 <li><a className="subcategory_item" href="/about">Về chúng tôi</a></li>
-                                                                                <li><a className="subcategory_item" href="/chinh-sach-bao-mat">Chính sách bảo mật</a></li>
+                                                                                <li><a className="subcategory_item" href="/policy">Chính sách bảo mật</a></li>
                                                                             </ul>
                                                                         </div>
                                                                     </div>
