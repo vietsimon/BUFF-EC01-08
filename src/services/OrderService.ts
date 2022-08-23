@@ -1,16 +1,17 @@
 import { BuffVnDataSource } from "../dataSource";
 import OrderEntity from "../entity/OrderEntity";
-import { OrderPagingType, CreateOrderType, UpdateOrderType, OrderPaymentStatusType } from "../type/OrderType";
+import { OrderPagingType, CreateOrderType, UpdateOrderType, OrderPaymentStatusType, OrderUpdateStatusType } from "../type/OrderType";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
 import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 import Common from "../ultils/common";
 import OrderProductEntity from "../entity/OrderProductEntity";
 import ProductEntity from "../entity/ProductEntity";
 import SizeProductEntity from "../entity/SizeProductEntity";
+import ProductService from "./ProductService";
 
 export default class OrderService {
     private alias: string = "order"
-    public async GetById(id: number, relationOrderProduct : boolean = true) {
+    public async GetById(id: number, relationOrderProduct: boolean = true) {
         let result = await BuffVnDataSource.getRepository(OrderEntity).findOne({
             where: {
                 id
@@ -19,6 +20,19 @@ export default class OrderService {
                 orderProducts: relationOrderProduct
             }
         });
+        
+        return result;
+    }
+    public async GetByDetailId(id: number, relationOrderProduct: boolean = true) {
+        let result = await BuffVnDataSource.getRepository(OrderEntity).findOne({
+            where: {
+                id
+            },
+            relations: {
+                orderProducts: {product:relationOrderProduct,size:relationOrderProduct},
+            }
+        });
+        
         return result;
     }
 
@@ -34,31 +48,51 @@ export default class OrderService {
         }
         if (!result.status) return result;
 
-        let Order = await this.GetById(id);
+        let order = await this.GetByDetailId(id) as any;
 
-        if (!Order) {
+        if (!order) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
         if (!result.status) return result;
 
-        result.data = Order;
+        result.data = order;
         return result;
     }
 
     public async GetOrderPaging(query: IBaseFilterRequestType) {
+
         let pageData: OrderPagingType<any> = {} as any;
         pageData.currentPage = query?.page ?? 1;
         pageData.pageSize = query?.pageSize ?? 10;
         let recordsToSkip = (query.page - 1) * pageData.pageSize;
-        let queryData = BuffVnDataSource.createQueryBuilder(OrderEntity, this.alias)
+        let queryData = BuffVnDataSource.createQueryBuilder(OrderEntity, this.alias);
         if (query.keySearch)
             queryData = queryData.where(`${this.alias}.orderCode like :orderCode`, { orderCode: `%${query.keySearch}%` });
 
+        if (query.status)
+            queryData = queryData.where(`${this.alias}.status like :status`, { status: `%${query.status}%` });
+
         pageData.total = await queryData.getCount();
-        pageData.datas = await queryData.skip(recordsToSkip)
-            .take(query.pageSize)
-            .select(`${this.alias}.*`)
+
+        pageData.datas = await queryData.offset(recordsToSkip)
+            .limit(query.pageSize)
+            .leftJoin(`${this.alias}.guest`, 'guest')
+            .select(`${this.alias}.id`, `id`)
+            .addSelect(`${this.alias}.orderCode`, `orderCode`)
+            .addSelect(`${this.alias}.guestId`, `guestId`)
+            .addSelect([`guest.fullName`, `guest.phone`])
+            .addSelect(`${this.alias}.totalPrice`, `totalPrice`)
+            .addSelect(`${this.alias}.shippingAddress`, `shippingAddress`)
+            .addSelect(`${this.alias}.shippingFee`, `shippingFee`)
+            .addSelect(`${this.alias}.shippingMethod`, `shippingMethod`)
+            .addSelect(`${this.alias}.shippingProvinceId`, `shippingProvinceId`)
+            .addSelect(`${this.alias}.shippingDistrictId`, `shippingDistrictId`)
+            .addSelect(`${this.alias}.shippingWardId`, `shippingWardId`)
+            .addSelect(`${this.alias}.paymentMethod`, `paymentMethod`)
+            .addSelect(`${this.alias}.status`, `status`)
+            .addSelect(`${this.alias}.createdAt`, `createdAt`)
+            .addSelect(`${this.alias}.updatedAt`, `updatedAt`)
             .getRawMany();
 
         const result: DataResponseServiceType<any> = {
@@ -210,6 +244,44 @@ export default class OrderService {
         await BuffVnDataSource.getRepository(OrderEntity).update({ id }, data as any);
         return result;
     }
+
+    public async UpdateOrderStatus(data: OrderUpdateStatusType): Promise<BaseResponseServiceType> {
+        const result: BaseResponseServiceType = {
+            status: true,
+            errors: []
+        }
+        let id = data?.id;
+        if (!id) {
+            result.status = false
+            result.errors.push("Mã không được rỗng")
+        }
+        if (!data?.status) {
+            result.status = false
+            result.errors.push("Tình trạng không được rỗng")
+        }
+        if (!data?.note) {
+            result.status = false
+            result.errors.push("Ghi chú không được rỗng")
+        }
+        if (!result.status) return result;
+
+        let order = await this.GetById(id, false);
+        if (!order) {
+            result.status = false;
+            result.errors.push("Không tồn tại thông tin này!");
+        }
+        if (order.status == "recieved") {
+            result.status = false;
+            result.errors.push("Đơn hàng này đã kết thúc!");
+        }
+        if (!result.status) return result;
+        order.note = data.note;
+        order.status = data.status;
+        order.updatedAt = new Date();
+        await BuffVnDataSource.getRepository(OrderEntity).update({ id }, order);
+        return result;
+    }
+
     public async PaymentSuccess(data: OrderPaymentStatusType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
@@ -228,15 +300,15 @@ export default class OrderService {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
-        
-        if (order.status!="new") {
+
+        if (order.status != "new") {
             result.status = false;
             result.errors.push("Đơn hàng này đã hết hạn!");
         }
         if (!result.status) return result;
 
-        order.status='paid';
-        order.updatedAt=new Date();
+        order.status = 'paid';
+        order.updatedAt = new Date();
         await BuffVnDataSource.getRepository(OrderEntity).update({ id }, order);
         return result;
     }
@@ -254,20 +326,20 @@ export default class OrderService {
 
         if (!result.status) return result;
 
-        let order = await this.GetById(id,false);
+        let order = await this.GetById(id, false);
         if (!order) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
-        
-        if (order.status!="new") {
+
+        if (order.status != "new") {
             result.status = false;
             result.errors.push("Đơn hàng này đã hết hạn!");
         }
         if (!result.status) return result;
 
-        order.status='cancel';
-        order.updatedAt=new Date();
+        order.status = 'cancel';
+        order.updatedAt = new Date();
         await BuffVnDataSource.getRepository(OrderEntity).update({ id }, order);
         return result;
     }

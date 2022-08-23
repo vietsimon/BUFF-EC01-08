@@ -59,11 +59,17 @@ export default class CategoryService {
         let queryData = BuffVnDataSource.createQueryBuilder(CategoryEntity, this.alias)
         if (query.keySearch)
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
-
-        pageData.total = await queryData.getCount();
-        pageData.datas = await queryData.skip(recordsToSkip)
-            .take(query.pageSize)
+            
+        if (query?.status)
+            queryData = queryData.where(`${this.alias}.status = :status`, { status: `${query.status}` });
+        
+            pageData.total = await queryData.getCount();
+        pageData.datas = await queryData.offset(recordsToSkip)
+            .limit(query.pageSize)
+            .leftJoin(`category_entity`, 'parent',`parent.id=${this.alias}.parentId`)
             .select(`${this.alias}.*`)
+            .addSelect(`parent.id`, `parent_id`)
+            .addSelect(`parent.name`, `parent_name`)
             .getRawMany();
 
         const result: DataResponseServiceType<any> = {

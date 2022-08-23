@@ -15,6 +15,10 @@ import BlogCategoriesWebController from "./controller/web/BlogCategoriesWebContr
 import BlogWebController from "./controller/web/BlogWebController";
 import BlogAdminController from "./controller/admin/BlogAdminController";
 import OrderWebController from "./controller/web/OrderWebController";
+import OrderAdminController from "./controller/admin/OrderAdminController";
+import CustomerAdminController from "./controller/admin/CustomerAdminController";
+import LocationAdminController from "./controller/admin/LocationAdminController";
+import UploadController from "./controller/UploadController";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -34,11 +38,16 @@ let controller = [
     new ColorAdminController(),
     new BlogCategoriesAdminController(),
     new BlogAdminController(),
+    new OrderAdminController(),
+    new CustomerAdminController(),
+    new LocationAdminController(),
+    new UploadController()
 ]
 app.use(bodyParser.json())
 app.use(cors({
     origin: [
         "http://localhost:3000",
+        "http://localhost:3001",
         "https://ec01-08-payment.herokuapp.com"
     ]
 }))

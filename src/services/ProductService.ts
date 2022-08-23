@@ -7,7 +7,7 @@ import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 export default class ProductService {
     private alias: string = "product"
 
-    private async GetById(id: number) {
+    public async GetById(id: number) {
         let result = await BuffVnDataSource.createQueryBuilder(ProductEntity, this.alias)
             .where(`${this.alias}.id = :id`, { id: id })
             .leftJoin(`${this.alias}.category`, 'category')
@@ -264,7 +264,6 @@ export default class ProductService {
         await BuffVnDataSource.getRepository(ProductEntity).delete({ id });
         return result;
     }
-
 
     public async GetLastest(query?: any) {
         query.status = 'active';

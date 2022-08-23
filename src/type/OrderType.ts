@@ -44,3 +44,9 @@ export type UpdateOrderType  =OrderType& {
 export type OrderPaymentStatusType  = {
     orderId:number
 }
+
+export type OrderUpdateStatusType  = {
+    id:number,
+    note:string,
+    status:StatusOrderType
+}
