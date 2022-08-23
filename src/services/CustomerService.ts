@@ -83,7 +83,7 @@ export default class CustomerService {
         if (customerExist) {
             result.status = false
             result.errors.push("Người dùng đã tồn tại");
-            return result;
+            return result; 
         }
         let password = Common.GeneratePassword(requestBody.username, requestBody.password, "customer");
         let customter = new CustomerEntity({
