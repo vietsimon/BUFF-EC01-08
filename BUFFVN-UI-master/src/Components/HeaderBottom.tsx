@@ -83,7 +83,7 @@ export default function HeaderBottomComponent() {
                                                                         <div className="col-md-15">
                                                                             <a href="index.html" className="image-link">
                                                                                 <span className="thumbnail">
-                                                                                    <img className="img-responsive img-border" src="image/demo/feature/home-1.jpg" alt="" />
+                                                                                    <img className="img-responsive img-border" src="" alt="" />
                                                                                     <span className="btn btn-default">Read More</span>
                                                                                 </span>
                                                                                 <h3 className="figcaption">Home page - (Default)</h3>
