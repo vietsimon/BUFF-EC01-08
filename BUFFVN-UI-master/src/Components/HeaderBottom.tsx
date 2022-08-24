@@ -76,7 +76,7 @@ export default function HeaderBottomComponent() {
                                                 <div className="container">
                                                     <ul className="megamenu " data-transition="slide" data-animationtime={250}>
                                                         <li className="home hover">
-                                                            <a href="index.html">Trang chủ <b className="caret"></b></a>
+                                                            <a href="/">Trang chủ <b className="caret"></b></a>
                                                             <div className="sub-menu" style={{ width: "100%" }} >
                                                                 <div className="content" >
                                                                     <div className="row">

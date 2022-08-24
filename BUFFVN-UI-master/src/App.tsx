@@ -19,6 +19,10 @@ import { Policy } from './views/Post/Policy';
 import { Contact } from './views/Post/Contact';
 import { Login } from './views/Auth/Login';
 
+import { Register } from './views/Auth/Register';
+
+
+
 function App() {
     return (
         <BrowserRouter>
@@ -38,6 +42,7 @@ function App() {
                 <Route path='' element={<Layout />}>
                     <Route index element={<Home></Home>}></Route>
                     <Route path="login" element={<Login />}> </Route>
+                    <Route path="register" element={<Register />}> </Route>
                     <Route path='about' element={<About></About>}></Route>
                     <Route path='policy' element={<Policy></Policy>}></Route>
                     <Route path='contact' element={<Contact></Contact>}></Route>

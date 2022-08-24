@@ -11,7 +11,7 @@ export function About() {
                 <div id="content" className="col-sm-12">
                     <div className="about-us about-demo-3">
                         <div className="row">
-                            <div className="col-lg-6 col-md-6 about-image"> <img src="https://demo.smartaddons.com/templates/html/market/image/demo/about/about-us-demo3.jpg" alt="About Us" /> </div>
+                            <div className="col-lg-6 col-md-6 about-image"> <img src="https://hoileonui.com/wp-content/uploads/2020/07/x-rock-climbing-1.jpg" alt="About Us" /> </div>
                             <div className="col-lg-6 col-md-6 about-info">
                                 <h2 className="about-title">Về chúng tôi</h2>
                                 <div className="about-text">
@@ -31,38 +31,8 @@ Và rồi, ngày ấy đã đến khi Joan quyết định rằng ông muốn t�
 Khi bạn ở ngoài trời, bạn kết nối với cuộc sống và với chính mình. Tại BUFF®, chúng tôi thực sự tin rằng một số khoảnh khắc tuyệt vời nhất trong cuộc sống xảy ra ở ngoài trời và đó là lý do tại sao chúng tôi tạo ra phong trào Sống thêm ngay bây giờ - một lựa chọn các hiện tượng kỳ diệu trong tự nhiên để khuyến khích bạn Sống nhiều khoảnh khắc ngoài trời hơn. Đừng đợi một phút! Tìm một thế giới mới xung quanh và nắm bắt khoảnh khắc.
                                     <br /></p>
                             </div>
-                            <div className="col-lg-6 col-md-6 skills-value">
-                                <ul className="value-list blank">
-                                    <li className="item">
-                                        <p className="label-skill">Skill Lorem ipsum:</p>
-                                        <div className="progress">
-                                            <div className="progress-bar progress-bar-striped active" style={{ width: "90%" }}>
-                                                40%
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li className="item">
-                                        <p className="label-skill">Skill donec pede:</p>
-                                        <div className="progress">
-                                            <div className="progress-bar progress-bar-info progress-bar-striped active" style={{ width: "95%" }}>
-                                                50%
-                                            </div>
-                                        </div>
-
-                                    </li>
-                                    <li className="item">
-                                        <p className="label-skill">Skill nulla consequat:</p>
-                                        <div className="progress">
-                                            <div className="progress-bar progress-bar-danger progress-bar-striped active" style={{ width: "85%" }}>
-                                                70%
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </>

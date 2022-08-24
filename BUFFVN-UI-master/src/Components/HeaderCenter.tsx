@@ -6,7 +6,7 @@ export default function HeaderCenterComponent() {
             <div className="container">
                 <div className="row">
                     <div className="navbar-logo col-md-3 col-sm-12 col-xs-12">
-                        <a href="index.html" className="logo"><img src="../assets/image/logos/logo.png" title="Your Store" alt="Your Store" /></a>
+                        <a href="/" className="logo"><img src="../assets/image/logos/logo.png" title="Your Store" alt="Your Store" /></a>
                     </div>
 
                     <div id="sosearchpro" className="col-md-5 col-sm-7 search-pro">
