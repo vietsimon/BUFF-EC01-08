@@ -27,10 +27,10 @@ export default class BlogEntity {
     @Column({ nullable: false, type: "json" })
     images: Array<string>
     
-    @Column({ nullable: false })
+    @Column({ nullable: true , type: "text" })
     description: string
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: "text" })
     detail: string
 
     @Column({ nullable: false, type: "text" })

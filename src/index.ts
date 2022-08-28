@@ -19,6 +19,7 @@ import OrderAdminController from "./controller/admin/OrderAdminController";
 import CustomerAdminController from "./controller/admin/CustomerAdminController";
 import LocationAdminController from "./controller/admin/LocationAdminController";
 import UploadController from "./controller/UploadController";
+import BrandAdminController from "./controller/admin/BrandAdminController";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -41,6 +42,7 @@ let controller = [
     new OrderAdminController(),
     new CustomerAdminController(),
     new LocationAdminController(),
+    new BrandAdminController(),
     new UploadController()
 ]
 app.use(bodyParser.json())

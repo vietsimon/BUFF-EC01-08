@@ -13,10 +13,12 @@ export default class ProductService {
             .leftJoin(`${this.alias}.category`, 'category')
             .leftJoin(`${this.alias}.size`, 'size')
             .leftJoin(`${this.alias}.color`, 'color')
+            .leftJoin(`${this.alias}.brand`, 'brand')
             .select(`${this.alias}.*`)
             .addSelect([`category.id`, `category.name`])
             .addSelect([`size.id`, `size.name`])
             .addSelect([`color.id`, `color.name`])
+            .addSelect([`brand.id`, `brand.name`, `brand.picture`])
             .getRawOne()
         return result;
     }
@@ -66,10 +68,12 @@ export default class ProductService {
             .leftJoin(`${this.alias}.category`, 'category')
             .leftJoin(`${this.alias}.size`, 'size')
             .leftJoin(`${this.alias}.color`, 'color')
+            .leftJoin(`${this.alias}.brand`, 'brand')
             .select(`${this.alias}.*`)
             .addSelect([`category.id`, `category.name`])
             .addSelect([`size.id`, `size.name`])
             .addSelect([`color.id`, `color.name`])
+            .addSelect([`brand.id`, `brand.name`, `brand.picture`])
             .getRawMany();
 
         let result: DataResponseServiceType<any> = {
@@ -113,7 +117,7 @@ export default class ProductService {
             result.status = false
             result.errors.push("Hình ảnh không được rỗng")
         }
-        if (!data?.label) {
+        if (!data?.brandId) {
             result.status = false
             result.errors.push("Nhãn hiệu không được rỗng")
         }
@@ -196,7 +200,7 @@ export default class ProductService {
             result.status = false
             result.errors.push("Hình ảnh không được rỗng")
         }
-        if (!data?.label) {
+        if (!data?.brandId) {
             result.status = false
             result.errors.push("Nhãn hiệu không được rỗng")
         }

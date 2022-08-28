@@ -1,21 +1,18 @@
 import { BuffVnDataSource } from "../dataSource";
-import BlogEntity from "../entity/BlogEntity";
-import { BlogPagingType, CreateBlogType, UpdateBlogType } from "../type/BlogType";
+import BrandEntity from "../entity/BrandEntity";
+import { BrandPagingType, CreateBrandType, UpdateBrandType } from "../type/BrandType";
 import { BaseResponseServiceType, DataResponseServiceType } from "../type/CommonType";
 import { IBaseFilterRequestType } from "../type/IBaseFilterRequestType";
 
-export default class BlogService {
-    private alias: string = "blog"
-
+export default class BrandService {
+    private alias: string = "brand"
     private async GetById(id: number) {
-        let result = await BuffVnDataSource.createQueryBuilder(BlogEntity, this.alias)
-            .where(`${this.alias}.id = :id`, { id: id })
-            .leftJoin(`${this.alias}.category`, 'category')
-            .select(`${this.alias}.*`)
-            .addSelect([`category.id`, `category.name`])
-            .getRawOne()
+        let result = await BuffVnDataSource.getRepository(BrandEntity).findOneBy({
+            id
+        });
         return result;
     }
+
     public async GetDetail(id: number) {
         const result: DataResponseServiceType<any> = {
             status: true,
@@ -28,91 +25,80 @@ export default class BlogService {
         }
         if (!result.status) return result;
 
-        let size = await this.GetById(id);
+        let brand = await this.GetById(id);
 
-        if (!size) {
+        if (!brand) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
         if (!result.status) return result;
 
-        result.data = size;
+        result.data = brand;
+        return result;
+    }
+
+    public async GetAll(query?: any) {
+        let queryData = BuffVnDataSource.createQueryBuilder(BrandEntity, this.alias)
+        if (query?.status)
+            queryData = queryData.where(`${this.alias}.status = :status`, { status: `${query.status}` });
+        let data = await queryData.select(`${this.alias}.*`)
+            .getRawMany();
+        const result: DataResponseServiceType<any> = {
+            status: true,
+            errors: [],
+            data
+        }
         return result;
     }
 
     public async GetPaging(query: IBaseFilterRequestType) {
-        let pageData: BlogPagingType<any> = {} as any;
+        let pageData: BrandPagingType<any> = {} as any;
         pageData.currentPage = query?.page ?? 1;
         pageData.pageSize = query?.pageSize ?? 10;
         let recordsToSkip = (query.page - 1) * pageData.pageSize;
-        let queryData = BuffVnDataSource.createQueryBuilder(BlogEntity, this.alias)
+        let queryData = BuffVnDataSource.createQueryBuilder(BrandEntity, this.alias)
         if (query.keySearch)
             queryData = queryData.where(`${this.alias}.name like :name`, { name: `%${query.keySearch}%` });
-
-        if (query.status)
-            queryData = queryData.where(`${this.alias}.status like :status`, { status: `%${query.status}%` });
 
         pageData.total = await queryData.getCount();
         pageData.datas = await queryData.offset(recordsToSkip)
             .limit(query.pageSize)
-            .leftJoin(`${this.alias}.category`, 'category')
             .select(`${this.alias}.*`)
-            .addSelect([`category.id`, `category.name`])
             .getRawMany();
 
-        let result: DataResponseServiceType<any> = {
+        const result: DataResponseServiceType<any> = {
             status: true,
             errors: [],
             data: pageData
         };
         return result;
     }
-
-    public async Create(data: CreateBlogType): Promise<BaseResponseServiceType> {
+    public async Create(data: CreateBrandType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
-        }
-        if (!data?.key) {
-            result.status = false
-            result.errors.push("Từ khóa không được rỗng")
         }
         if (!data?.name) {
             result.status = false
             result.errors.push("Tên không được rỗng")
         }
-
-        if (!data?.categoryId) {
+        if (!data?.key) {
             result.status = false
-            result.errors.push("Danh mục không được rỗng")
+            result.errors.push("Từ khóa không được rỗng")
         }
-        if (!data?.description) {
-            result.status = false
-            result.errors.push("Mô tả không được rỗng")
-        }
-
-        if (!data?.images) {
-            result.status = false
-            result.errors.push("Hình ảnh không được rỗng")
-        }
-
-        if (!data?.status) {
-            result.status = false
-            result.errors.push("Trạng thái không được rỗng")
-        }
-
         if (!result.status) return result;
 
-        let blog = new BlogEntity({
+        // data.key=Common.replaceAccents( data.name);
+        let brand = new BrandEntity({
             updatedAt: new Date(),
             createdAt: new Date()
         })
-        blog = { ...blog, ...data };
-        await BuffVnDataSource.getRepository(BlogEntity).save(blog);
+        brand={...brand,...data}
+        await BuffVnDataSource.getRepository(BrandEntity).save(brand);
         return result;
     }
 
-    public async Update(data: UpdateBlogType): Promise<BaseResponseServiceType> {
+    public async Update(data: UpdateBrandType): Promise<BaseResponseServiceType> {
         const result: BaseResponseServiceType = {
             status: true,
             errors: []
@@ -123,46 +109,24 @@ export default class BlogService {
             result.errors.push("Mã không được rỗng")
         }
 
-        if (!data?.key) {
-            result.status = false
-            result.errors.push("Từ khóa không được rỗng")
-        }
         if (!data?.name) {
             result.status = false
             result.errors.push("Tên không được rỗng")
         }
-
-        if (!data?.categoryId) {
+        if (!data?.key) {
             result.status = false
-            result.errors.push("Danh mục không được rỗng")
+            result.errors.push("Từ khóa không được rỗng")
         }
-        if (!data?.description) {
-            result.status = false
-            result.errors.push("Mô tả không được rỗng")
-        }
-
-        if (!data?.images) {
-            result.status = false
-            result.errors.push("Hình ảnh không được rỗng")
-        }
-
-        if (!data?.status) {
-            result.status = false
-            result.errors.push("Trạng thái không được rỗng")
-        }
-
         if (!result.status) return result;
 
-        let blog = await this.GetById(id);
-        if (!blog) {
+        let brand = await this.GetById(id);
+        if (!brand) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
-        blog= {...blog,...data};
         if (!result.status) return result;
-console.log(blog);
 
-        await BuffVnDataSource.getRepository(BlogEntity).update({ id }, data);
+        await BuffVnDataSource.getRepository(BrandEntity).update({ id }, data);
         return result;
     }
 
@@ -177,15 +141,19 @@ console.log(blog);
         }
         if (!result.status) return result;
 
-        let size = await this.GetById(id);
+        let brand = await BuffVnDataSource.getRepository(BrandEntity).findOne({
+            where: { id: id }
+        });
 
-        if (!size) {
+        if (!brand) {
             result.status = false;
             result.errors.push("Không tồn tại thông tin này!");
         }
         if (!result.status) return result;
 
-        await BuffVnDataSource.getRepository(BlogEntity).delete({ id });
+        await BuffVnDataSource.getRepository(BrandEntity).delete({ id });
         return result;
     }
+
+
 }

@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import BlogCategoryEntity from "./entity/BlogCategoryEntity";
 import BlogEntity from "./entity/BlogEntity";
+import BrandEntity from "./entity/BrandEntity";
 import CategoryEntity from "./entity/CategoryEntity";
 import ColorEntity from "./entity/ColorEntity";
 import CustomerEntity from "./entity/CustomerEntity";
@@ -31,7 +32,8 @@ const AppDataSource = new DataSource({
         SizeProductEntity,
         ManagerEntity,
         OrderEntity,
-        OrderProductEntity
+        OrderProductEntity,
+        BrandEntity
     ],
     subscribers: [],
     migrations: [],

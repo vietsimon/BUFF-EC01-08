@@ -1,8 +1,8 @@
 import express = require("express");
-import CustomerService from "../../services/CustomerService";
+import BrandService from "../../services/BrandService";
 import BaseController from "../BaseController"
 
-export default class CustomerAdminController extends BaseController {
+export default class BrandAdminController extends BaseController {
 
     constructor() {
         super();
@@ -14,19 +14,34 @@ export default class CustomerAdminController extends BaseController {
     }
 
     private initGetRouter() {
-        this._router.get("/v1/admin/customer", this.getCustomerPaging);
-        this._router.get("/v1/admin/customer/:id", this.getCustomerDetail);
+        this._router.get("/v1/admin/brand/all", this.getCategoryAll);
+        this._router.get("/v1/admin/brand", this.getPaging);
+        this._router.get("/v1/admin/brand/:id", this.getDetail);
     }
     private initPostPutDeleteRouter() {
-        this._router.post("/v1/admin/customer", this.createCustomer);
-        this._router.put("/v1/admin/customer", this.updateCustomer);
-        this._router.delete("/v1/admin/customer/:id", this.deleteCustomer);
+        this._router.post("/v1/admin/brand", this.create);
+        this._router.put("/v1/admin/brand", this.update);
+        this._router.delete("/v1/admin/brand/:id", this.delete);
     }
 
-    private getCustomerPaging = async (request: express.Request, response: express.Response) => {
+    private getCategoryAll = async (request: express.Request, response: express.Response) => {
         try {
-            let service = new CustomerService();
-            let dataService = await service.GetCustomerPaging(request.query);
+            let service = new BrandService();
+            let dataService = await service.GetAll(request.query);
+            if (dataService.status)
+                return response.status(200).json(dataService);
+            else return response.status(400).json({ errors: dataService.errors })
+        } catch (error) {
+            return response.status(500).json({
+                error: error.message
+            })
+        }
+    }
+
+    private getPaging = async (request: express.Request, response: express.Response) => {
+        try {
+            let service = new BrandService();
+            let dataService = await service.GetPaging(request.query);
             if (dataService.status)
                 return response.status(200).json(dataService.data);
             else return response.status(400).json({ errors: dataService.errors })
@@ -37,10 +52,10 @@ export default class CustomerAdminController extends BaseController {
         }
     }
 
-    private getCustomerDetail = async (request: express.Request, response: express.Response) => {
+    private getDetail = async (request: express.Request, response: express.Response) => {
         try {
             let { id } = request.params as any;
-            let service = new CustomerService();
+            let service = new BrandService();
             let dataService = await service.GetDetail(id);
             if (dataService.status)
                 return response.status(200).json(dataService);
@@ -51,10 +66,10 @@ export default class CustomerAdminController extends BaseController {
             })
         }
     }
-    private createCustomer = async (request: express.Request, response: express.Response) => {
+    private create = async (request: express.Request, response: express.Response) => {
         try {
-            let service = new CustomerService();
-            let dataService = await service.CreateCustomer(request.body);
+            let service = new BrandService();
+            let dataService = await service.Create(request.body);
             if (dataService.status) {
                 return response.status(200).json(dataService);
             }
@@ -66,10 +81,10 @@ export default class CustomerAdminController extends BaseController {
         }
     }
 
-    private updateCustomer = async (request: express.Request, response: express.Response) => {
+    private update = async (request: express.Request, response: express.Response) => {
         try {
-            let service = new CustomerService();
-            let dataService = await service.UpdateCustomer(request.body);
+            let service = new BrandService();
+            let dataService = await service.Update(request.body);
             if (dataService.status)
                 return response.status(200).json(dataService);
             else return response.status(400).json({ errors: dataService.errors })
@@ -80,11 +95,11 @@ export default class CustomerAdminController extends BaseController {
         }
     }
 
-    private deleteCustomer = async (request: express.Request, response: express.Response) => {
+    private delete = async (request: express.Request, response: express.Response) => {
         try {
             let { id } = request.params as any;
-            let service = new CustomerService();
-            let dataService = await service.DeleteCustomer(id);
+            let service = new BrandService();
+            let dataService = await service.Delete(id);
             if (dataService.status)
                 return response.status(200).json(dataService);
             else return response.status(400).json({ errors: dataService.errors })

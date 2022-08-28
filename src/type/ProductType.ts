@@ -16,7 +16,7 @@ export type CreateProductType = {
     technology: string
     material: string
     activity: string
-    label: string,
+    brandId?: number,
     sizeId: number,
     colorId: number,
     status: StatusType
@@ -35,7 +35,7 @@ export type UpdateProductType = {
     technology: string
     material: string
     activity: string
-    label: string,
+    brandId?: number,
     sizeId: number,
     colorId: number,
     status: StatusType

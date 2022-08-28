@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { GenderType, StatusType } from "../type/CommonType";
+import BrandEntity from "./BrandEntity";
 import CategoryEntity from "./CategoryEntity";
 import ColorEntity from "./ColorEntity";
 import SizeProductEntity from "./SizeProductEntity";
@@ -26,10 +27,10 @@ export default class ProductEntity {
     @Column({ nullable: false })
     name: string
 
-    @Column({ nullable: false })
+    @Column({ nullable: true , type: "text" })
     description: string
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: "text" })
     detail: string
 
     @Column({ nullable: false, default: 0, type: "decimal" })
@@ -53,8 +54,11 @@ export default class ProductEntity {
     @Column({ nullable: false })
     activity: string
 
-    @Column({ nullable: false })
-    label: string
+    @Column({ nullable: true })
+    brandId: number
+
+    @ManyToOne(type => BrandEntity)
+    brand: BrandEntity
 
     @Column({ nullable: true })
     sizeId: number
